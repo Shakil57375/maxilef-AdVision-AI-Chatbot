@@ -1,0 +1,348 @@
+.react-datepicker__navigation--next--with-time:not(.react-datepicker__navigation--next--with-today-button) {
+    right: 10px !important;
+}
+
+.react-datepicker__navigation .react-datepicker__navigation--next .react-datepicker__navigation--next--with-time{
+    right: 10px !important;
+}
+
+.react-datepicker__navigation-icon--next {
+    left: -2px;
+}
+
+
+
+.ql-toolbar {
+    background: beige !important;
+}
+
+/* Base styles for the rich text output */
+/* Base styles for rich text output */
+.rich-text-output {
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+/* Preserve ReactQuill alignment classes */
+.rich-text-output .ql-align-center {
+  text-align: center !important;
+}
+
+.rich-text-output .ql-align-right {
+  text-align: right !important;
+}
+
+.rich-text-output .ql-align-justify {
+  text-align: justify !important;
+}
+
+/* List styles */
+.rich-text-output ul,
+.rich-text-output ol {
+  padding-left: 1.5em;
+  margin: 1em 0;
+}
+
+.rich-text-output ul {
+  list-style-type: disc !important;
+}
+
+.rich-text-output ol {
+  list-style-type: decimal !important;
+}
+
+.rich-text-output li {
+  display: list-item !important;
+  margin-bottom: 0.5em;
+}
+
+/* Preserve ReactQuill list classes */
+.rich-text-output .ql-indent-1 {
+  padding-left: 3em !important;
+}
+
+.rich-text-output .ql-indent-2 {
+  padding-left: 6em !important;
+}
+
+/* Editor toolbar styling */
+.ql-toolbar {
+  background: #f5f5dc !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px 4px 0 0;
+}
+
+.ql-container {
+  border: 1px solid #ddd !important;
+  border-top: none !important;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Preserve text formatting */
+.rich-text-output strong {
+  font-weight: bold !important;
+}
+
+.rich-text-output em {
+  font-style: italic !important;
+}
+
+.rich-text-output u {
+  text-decoration: underline !important;
+}
+
+/* Spacing for block elements */
+.rich-text-output p {
+  margin-bottom: 1em;
+}
+
+.rich-text-output h1,
+.rich-text-output h2,
+.rich-text-output h3,
+.rich-text-output h4 {
+  margin: 1em 0 0.5em;
+  font-weight: bold;
+}
+
+
+.rich-text-content {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.rich-text-content strong {
+  font-weight: bold;
+}
+
+.rich-text-content em {
+  font-style: italic;
+}
+
+.rich-text-content ul, .rich-text-content ol {
+  margin-left: 20px;
+}
+
+.rich-text-content h1, .rich-text-content h2, .rich-text-content h3, 
+.rich-text-content h4, .rich-text-content h5, .rich-text-content h6 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* Base styles for rich text output */
+.rich-text-output {
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+/* Preserve ReactQuill alignment classes */
+.rich-text-output .ql-align-center,
+.ql-editor .ql-align-center {
+  text-align: center !important;
+}
+
+.rich-text-output .ql-align-right,
+.ql-editor .ql-align-right {
+  text-align: right !important;
+}
+
+.rich-text-output .ql-align-justify,
+.ql-editor .ql-align-justify {
+  text-align: justify !important;
+}
+
+/* List styles */
+.rich-text-output ul,
+.rich-text-output ol,
+.ql-editor ul,
+.ql-editor ol {
+  padding-left: 1.5em;
+  margin: 1em 0;
+}
+
+.rich-text-output ul,
+.ql-editor ul {
+  list-style-type: disc !important;
+}
+
+.rich-text-output ol,
+.ql-editor ol {
+  list-style-type: decimal !important;
+}
+
+.rich-text-output li,
+.ql-editor li {
+  display: list-item !important;
+  margin-bottom: 0.5em;
+}
+
+/* Editor toolbar styling */
+.ql-toolbar {
+  background: beige !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px 4px 0 0;
+}
+
+.ql-container {
+  border: 1px solid #ddd !important;
+  border-top: none !important;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Markdown formatting */
+.ql-editor:not(.ql-blank)::before {
+  content: none;
+}
+
+/* Ensure Markdown bold text is visible while editing */
+.ql-editor strong,
+.rich-text-output strong {
+  font-weight: bold !important;
+}
+
+  
+  .rich-text-content strong {
+    font-weight: bold;
+  }
+  
+  .rich-text-content em {
+    font-style: italic;
+  }
+
+
+  /* Base styles for rich text output */
+.rich-text-output {
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+    text-align: left;
+    word-wrap: break-word;
+  }
+  
+  /* Preserve ReactQuill alignment classes */
+  .rich-text-output .ql-align-center {
+    text-align: center !important;
+  }
+  
+  .rich-text-output .ql-align-right {
+    text-align: right !important;
+  }
+  
+  .rich-text-output .ql-align-justify {
+    text-align: justify !important;
+  }
+  
+  /* List styles */
+  .rich-text-output ul,
+  .rich-text-output ol {
+    padding-left: 1.5em;
+    margin: 1em 0;
+  }
+  
+  .rich-text-output ul {
+    list-style-type: disc !important;
+  }
+  
+  .rich-text-output ol {
+    list-style-type: decimal !important;
+  }
+  
+  .rich-text-output li {
+    display: list-item !important;
+    margin-bottom: 0.5em;
+  }
+  
+  /* Preserve ReactQuill list classes */
+  .rich-text-output .ql-indent-1 {
+    padding-left: 3em !important;
+  }
+  
+  .rich-text-output .ql-indent-2 {
+    padding-left: 6em !important;
+  }
+  
+  /* Editor toolbar styling */
+  .ql-toolbar {
+    background: beige !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px 4px 0 0;
+  }
+  
+  .ql-container {
+    border: 1px solid #ddd !important;
+    border-top: none !important;
+    border-radius: 0 0 4px 4px;
+  }
+  
+  /* Preserve text formatting */
+  .rich-text-output strong {
+    font-weight: bold !important;
+  }
+  
+  .rich-text-output em {
+    font-style: italic !important;
+  }
+  
+  .rich-text-output u {
+    text-decoration: underline !important;
+  }
+  
+  /* Spacing for block elements */
+  .rich-text-output p {
+    margin-bottom: 1em;
+  }
+  
+  .rich-text-output h1,
+  .rich-text-output h2,
+  .rich-text-output h3,
+  .rich-text-output h4 {
+    margin: 1em 0 0.5em;
+    font-weight: bold;
+  }
+  
+  /* Color preservation */
+  .rich-text-output [style*="color"] {
+    color: inherit;
+  }
+  
+  .rich-text-output [style*="background-color"] {
+    background-color: inherit;
+  }
+  
+  
+  .rich-text-content {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  
+  .rich-text-content ul, 
+  .rich-text-content ol {
+    margin: 0 0 1em;
+    padding-left: 20px;
+  }
+  
+  .rich-text-content li {
+    margin-bottom: 0.5em;
+  }
+  
+  .rich-text-content strong {
+    font-weight: bold;
+  }
+  
+  .rich-text-content em {
+    font-style: italic;
+  }
+  
+
+  .rich-text-content ol {
+    list-style-type: decimal;
+    padding-left: 20px;
+  }
+  
