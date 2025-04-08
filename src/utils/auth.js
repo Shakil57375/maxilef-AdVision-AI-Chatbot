@@ -1,7 +1,7 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const API_URL = 'https://agcourt.pythonanywhere.com'; // Replace with your actual API URL
+const API_URL = 'http://192.168.10.198:5006/'; // Replace with your actual API URL
 
 // Constants for token and user storage
 const accessToken_KEY = 'accessToken';
@@ -60,7 +60,7 @@ export const auth = {
 
   login: async (username, password) => {
     try {
-      const response = await axios.post(`${API_URL}/authentication_app/login/`, { username, password });
+      const response = await axios.post(`${API_URL}api/auth/login`, { username, password });
       auth.setTokens(response.data.access, response.data.refresh);  // Store access and refresh tokens
       return response.data;
     } catch (error) {

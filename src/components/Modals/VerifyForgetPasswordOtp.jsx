@@ -14,7 +14,7 @@ export default function VerifyOtpPage() {
   // Get temporary email from localStorage
   const authData = JSON.parse(localStorage.getItem("email"));
   const email = authData?.email;
-
+  console.log(email);
   useEffect(() => {
     // Focus the first input field when component mounts
     const firstInput = document.getElementById("code-0");
@@ -71,7 +71,12 @@ export default function VerifyOtpPage() {
 
     // Join the code array into a single OTP string
     const otp = code.join("");
-
+    localStorage.setItem(
+      "otp",
+      JSON.stringify({
+        otp: otp,
+      })
+    );
     if (otp.length !== 4) {
       toast.error("Please enter a valid 4-digit OTP.", { duration: 1000 });
       return;

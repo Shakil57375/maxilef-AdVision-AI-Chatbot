@@ -17,7 +17,8 @@ export default function ResetPasswordPage() {
   // Get email from localStorage
   const authData = JSON.parse(localStorage.getItem("email"))
   const email = authData?.email
-
+  const otp = JSON.parse(localStorage.getItem("otp"))
+  const forgetPasswordOTP = otp?.otp
   const {
     register,
     handleSubmit,
@@ -37,9 +38,11 @@ export default function ResetPasswordPage() {
 
     try {
       // Call mutation to reset the password
+     
       const response = await resetPassword({
         email,
-        password: data.newPassword,
+        otp: forgetPasswordOTP,
+        newPassword: data.newPassword,
       }).unwrap()
 
       toast.success(response?.Message || "Password reset successfully!", { duration: 1000 })
