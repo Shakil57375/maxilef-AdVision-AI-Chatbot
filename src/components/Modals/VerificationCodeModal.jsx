@@ -17,7 +17,7 @@ export default function ModalForVerificationCode() {
   // Get temporary email from localStorage
   const authData = JSON.parse(localStorage.getItem("email")); // Correctly parse the `auth` object
   const email = authData?.email; // Retrieve the `email`
-
+  console.log(email)
   const handleInputChange = (element, index) => {
     const value = element.value.replace(/[^0-9]/g, ""); // Only allow numbers
     const newCode = [...code];

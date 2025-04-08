@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { tagTypesList } from "../tagTypesLIst";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "https://backend.gameplanai.co.uk",
+    baseUrl: "http://192.168.10.198:5006/",
     prepareHeaders: (headers, { getState }) => {
         // Try to get token from Redux state
         const token = getState().auth?.accessToken || null;

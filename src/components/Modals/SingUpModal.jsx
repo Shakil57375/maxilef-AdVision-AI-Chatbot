@@ -1,65 +1,66 @@
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { FaEye, FaEyeSlash, FaEnvelope, FaLock, FaUser } from "react-icons/fa"
-import { Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../../context/AuthContext"
-import labRatImage from "../../assets/lab-rat2.png" // Add the lab rat image
-import logo from "../../assets/logo.png" // Add the logo image
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { FaEye, FaEyeSlash, FaEnvelope, FaLock, FaUser } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import labRatImage from "../../assets/lab-rat2.png"; // Add the lab rat image
+import logo from "../../assets/logo.png"; // Add the logo image
 
 export default function SignUpPage() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register: formRegister,
     handleSubmit,
     formState: { errors },
     watch,
     setError,
-  } = useForm()
-  const password = watch("password")
-  const acceptTerms = watch("termsAccepted")
-  const navigate = useNavigate()
-  const { handleSignup } = useAuth()
+  } = useForm();
+  const password = watch("password");
+  const acceptTerms = watch("termsAccepted");
+  const navigate = useNavigate();
+  const { handleSignup } = useAuth();
 
   // Handle form submission
   const onSubmit = async (data) => {
     if (!acceptTerms) {
       setError("termsAccepted", {
         type: "manual",
-        message: "You must accept the company's terms and conditions to submit the form.",
-      })
-      return
+        message:
+          "You must accept the company's terms and conditions to submit the form.",
+      });
+      return;
     }
 
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
       await handleSignup({
-        username: data.name,
+        name: data.name,
         email: data.email,
         password: data.password,
-      })
+      });
 
       localStorage.setItem(
         "email",
         JSON.stringify({
           email: data.email,
-        }),
-      )
-      navigate("/verificationCode")
+        })
+      );
+      navigate("/verificationCode");
     } catch (error) {
-      console.error("Signup error:", error)
+      console.error("Signup error:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex bg-black">
       {/* Left side - Branding and Illustration */}
       <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center relative">
         <Link to={"/home"} className="absolute top-8 left-8">
-                    <img src={logo} alt="" />
+          <img src={logo} alt="" />
         </Link>
 
         <div className="flex flex-col items-center justify-center">
@@ -79,14 +80,48 @@ export default function SignUpPage() {
           <p className="text-gray-300 mb-8">
             If you already have an account register <br />
             You can{" "}
-            <Link to="/login" className="text-blue-500 hover:underline font-medium">
+            <Link
+              to="/login"
+              className="text-blue-500 hover:underline font-medium"
+            >
               Login here !
             </Link>
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-300"
+              >
+                Username
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                  <FaUser className="h-5 w-5 text-gray-500" />
+                </div>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Enter your User name"
+                  {...formRegister("name", {
+                    required: "Name is required",
+                  })}
+                  className="block w-full pl-10 pr-3 py-3 bg-gray-800 border-0 text-white rounded-lg focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                />
+              </div>
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-300"
+              >
                 Email
               </label>
               <div className="relative">
@@ -107,32 +142,18 @@ export default function SignUpPage() {
                   className="block w-full pl-10 pr-3 py-3 bg-gray-800 border-0 text-white rounded-lg focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
                 />
               </div>
-              {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300">
-                Username
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                  <FaUser className="h-5 w-5 text-gray-500" />
-                </div>
-                <input
-                  id="name"
-                  type="text"
-                  placeholder="Enter your User name"
-                  {...formRegister("name", {
-                    required: "Name is required",
-                  })}
-                  className="block w-full pl-10 pr-3 py-3 bg-gray-800 border-0 text-white rounded-lg focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                />
-              </div>
-              {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name.message}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-300"
+              >
                 Password
               </label>
               <div className="relative">
@@ -157,14 +178,25 @@ export default function SignUpPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-300"
                 >
-                  {showPassword ? <FaEyeSlash className="h-5 w-5" /> : <FaEye className="h-5 w-5" />}
+                  {showPassword ? (
+                    <FaEyeSlash className="h-5 w-5" />
+                  ) : (
+                    <FaEye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-300"
+              >
                 Confirm Password
               </label>
               <div className="relative">
@@ -177,7 +209,8 @@ export default function SignUpPage() {
                   placeholder="Confirm your Password"
                   {...formRegister("confirmPassword", {
                     required: "Confirm password is required",
-                    validate: (value) => value === password || "Passwords do not match",
+                    validate: (value) =>
+                      value === password || "Passwords do not match",
                   })}
                   className="block w-full pl-10 pr-10 py-3 bg-gray-800 border-0 text-white rounded-lg focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
                 />
@@ -186,10 +219,18 @@ export default function SignUpPage() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-300"
                 >
-                  {showConfirmPassword ? <FaEyeSlash className="h-5 w-5" /> : <FaEye className="h-5 w-5" />}
+                  {showConfirmPassword ? (
+                    <FaEyeSlash className="h-5 w-5" />
+                  ) : (
+                    <FaEye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
-              {errors.confirmPassword && <p className="mt-1 text-sm text-red-400">{errors.confirmPassword.message}</p>}
+              {errors.confirmPassword && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
 
             <div className="flex items-start space-x-2">
@@ -200,10 +241,15 @@ export default function SignUpPage() {
                 {...formRegister("termsAccepted")}
               />
               <label htmlFor="termsAccepted" className="text-sm text-gray-400">
-                By creating an account, I accept the Terms & Conditions & Privacy Policy.
+                By creating an account, I accept the Terms & Conditions &
+                Privacy Policy.
               </label>
             </div>
-            {errors.termsAccepted && <p className="text-sm text-red-400">{errors.termsAccepted.message}</p>}
+            {errors.termsAccepted && (
+              <p className="text-sm text-red-400">
+                {errors.termsAccepted.message}
+              </p>
+            )}
 
             <button
               type="submit"
@@ -216,6 +262,5 @@ export default function SignUpPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

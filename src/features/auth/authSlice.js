@@ -12,6 +12,7 @@ const authSlice = createSlice({
       // Assign user profile and token to state
       state.user = action.payload.user;
       state.accessToken = action.payload.token;
+      state.refreshToken = action.payload.refreshToken; // Store refresh token if needed
     },
     userUpdated: (state, action) => {
       // Update user profile
@@ -21,6 +22,7 @@ const authSlice = createSlice({
       // Clear user data and token
       state.user = null;
       state.accessToken = null;
+      state.refreshToken = null; // Clear refresh token if needed
       localStorage.removeItem("auth");
     },
   },

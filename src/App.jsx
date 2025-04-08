@@ -137,9 +137,9 @@ function MainContent() {
             <Route
               path="/verificationCode"
               element={
-                <PublicRoute>
+                // <PublicRoute>
                   <ModalForVerificationCode />
-                </PublicRoute>
+                // {/* </PublicRoute> */}
               }
             />
             <Route

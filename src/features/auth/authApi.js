@@ -6,27 +6,25 @@ export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (data) => ({
-        url: "/authentication_app/signup/",
+        url: "api/auth/signup",
         method: "POST",
         body: data,
 
       }),
-
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          const { refresh, access } = data;
+          console.log(data)
+          const { refreshToken, accessToken, user } = data;
 
           // Dispatch userLoggedIn to update Redux state
-          dispatch(userLoggedIn({ refresh: refresh, token: access }));
-
           // Persist user data to localStorage
-          localStorage.setItem(
-            "auth",
-            JSON.stringify({ refresh, access })
-          );
-
+          // localStorage.setItem(
+          //   "auth",
+          //   JSON.stringify({ refreshToken, accessToken, user })
+          // );
           console.log("Signup successful:", data);
+          dispatch(userLoggedIn({ refreshToken: data.refreshToken, token: data.accessToken, user: data.user }));
         } catch (error) {
           console.error("Signup failed:", error);
           return;
@@ -41,7 +39,7 @@ export const authApi = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags : ['user'],
+      invalidatesTags: ['user'],
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
@@ -70,7 +68,7 @@ export const authApi = apiSlice.injectEndpoints({
 
     verifyEmail: builder.mutation({
       query: ({ email, otp }) => ({
-        url: '/authentication_app/verify_email/',
+        url: '/api/auth/verify-otp',
         method: 'POST',
         body: { email, otp },
       }),
@@ -125,7 +123,7 @@ export const authApi = apiSlice.injectEndpoints({
       query: (email) => ({
         url: "/authentication_app/forgot_password/",
         method: "POST",
-        body: { email : email }, // Send the email directly, ensure it's correct
+        body: { email: email }, // Send the email directly, ensure it's correct
       }),
       async onQueryStarted(arg, { queryFulfilled }) {
         console.log(arg)
@@ -138,7 +136,7 @@ export const authApi = apiSlice.injectEndpoints({
         }
       },
     }),
-    
+
     verifyForgetPasswordOtp: builder.mutation({
       query: ({ email, otp }) => ({
         url: "/authentication_app/verify_forget_password_otp/",
@@ -177,7 +175,7 @@ export const {
   useRegisterMutation,
   useVerifyEmailMutation,
   useGetUserProfileQuery,
-  useUpdateProfileMutation, 
+  useUpdateProfileMutation,
   useResendOtpMutation,
   useSendForgotPasswordOtpMutation,
   useVerifyForgetPasswordOtpMutation,
