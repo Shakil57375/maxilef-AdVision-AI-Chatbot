@@ -10,30 +10,18 @@ import { useGetUserProfileQuery } from "../features/auth/authApi";
 import shape1 from "../assets/Ellipse 7 (2).png";
 import shape2 from "../assets/Ellipse 8 (1).png";
 import shape3 from "../assets/Ellipse 9.png";
+import { useChat } from "../context/ChatContext";
 import {
   useGetAllChatsQuery,
   useRenameChatMutation,
   useDeleteChatMutation,
-  useSaveChatMutation,
 } from "../features/chat/chatApi";
-import { useChat } from "../context/ChatContext";
 
 export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   const user = useSelector((state) => state.auth.user);
   const { id: currentChatId } = useParams();
-  const {
-    data: userData,
-    isLoading: isProfileLoading,
-    refetch: refetchUserProfile,
-  } = useGetUserProfileQuery();
-  const {
-    data: chatsData,
-    isLoading: isChatsLoading,
-    refetch: refetchChats,
-  } = useGetAllChatsQuery();
-  const [renameChat] = useRenameChatMutation();
-  const [deleteChat] = useDeleteChatMutation();
-  const [saveChat] = useSaveChatMutation();
+  const { data: userData, isLoading: isProfileLoading } =
+    useGetUserProfileQuery();
   const { setCurrentChat, setCurrentChatId } = useChat();
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(null);
@@ -41,6 +29,11 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   const [editTitle, setEditTitle] = useState("");
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+
+  // Fetch chats using RTK Query
+  const { data: chatsData, isLoading: isChatsLoading } = useGetAllChatsQuery();
+  const [renameChat] = useRenameChatMutation();
+  const [deleteChat] = useDeleteChatMutation();
 
   const chats = chatsData?.chatHistories || [];
   const isLoading = isChatsLoading || isProfileLoading;
@@ -56,9 +49,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   }, []);
 
   const filteredChats = chats?.filter((chat) =>
-    (chat.chat_name || "Untitled Chat")
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
+    chat.chat_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const groupChatsByDate = (chats) => {
@@ -103,7 +94,6 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
       toast.success("Chat renamed successfully!", { duration: 1000 });
       setEditChatId(null);
       setEditTitle("");
-      refetchChats();
     } catch (error) {
       console.error("Error renaming chat:", error);
       toast.error("Failed to rename chat. Please try again.", {
@@ -113,28 +103,18 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   };
 
   const handleNewChat = async () => {
-    setCurrentChat([]); // Reset current chat
-    setCurrentChatId(null); // Reset chat ID
-    navigate("/"); // Navigate to root
+    setCurrentChat([]);
+    setCurrentChatId(null);
+    navigate("/");
   };
 
-  const handleSaveChat = async (chatId) => {
-    try {
-      await saveChat(chatId).unwrap();
-      toast.success("Chat saved successfully!", { duration: 1000 });
-      refetchChats();
-    } catch (error) {
-      console.error("Error saving chat:", error);
-      toast.error("Failed to save chat.", { duration: 1000 });
-    }
-  };
+
 
   const handleDeleteChat = async (chatId) => {
     try {
       await deleteChat(chatId).unwrap();
       toast.success("Chat deleted successfully!", { duration: 1000 });
       if (chatId === currentChatId) navigate("/");
-      refetchChats();
     } catch (error) {
       console.error("Error deleting chat:", error);
       toast.error("Failed to delete chat.", { duration: 1000 });
@@ -172,7 +152,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
               className="py-3 px-[82px] rounded-md bg-gradient-to-r from-[#FF00AA] to-[#01B9F9] text-white text-center font-semibold mb-2 flex items-center justify-center mx-auto"
               onClick={handleNewChat}
             >
-              + New Plan
+              + New Chat
             </button>
             <div className="px-4 mb-4">
               <div className="relative">
@@ -201,7 +181,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                 {searchQuery ? "Search Results" : "Recent Plans"}
               </p>
               {user && (
-                <div className="space-y-4 2xl:h-[calc(100vh-520px)] h-[calc(100vh-280px)] overflow-y-auto mt-4">
+                <div className="space-y-4 2xl:h-[calc(100vh-550px)] h-[calc(100vh-280px)] overflow-y-auto mt-4">
                   {isChatEmpty(groupedChats) ? (
                     <p className="text-gray-500 text-center">
                       {searchQuery
@@ -228,7 +208,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                                     onChange={(e) =>
                                       setEditTitle(e.target.value)
                                     }
-                                    className="p-2 rounded-md  w-full bg-gray-700 text-white"
+                                    className="p-2 rounded-md border border-gray-300 w-full dark:bg-gray-700 text-black"
                                     autoFocus
                                   />
                                   <button
@@ -277,22 +257,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                                   >
                                     🖋️ Rename
                                   </button>
-                                  <button
-                                    onClick={() => handleSaveChat(chat._id)}
-                                    className="flex items-center space-x-2 p-2 text-gray-500 hover:bg-gray-100 hover:text-black w-full"
-                                  >
-                                    {chat.is_saved ? (
-                                      <>
-                                        <IoSave className="text-green-500" />
-                                        <span>Saved</span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <IoSaveOutline />
-                                        <span>Save</span>
-                                      </>
-                                    )}
-                                  </button>
+                                  
                                   <button
                                     onClick={() => handleDeleteChat(chat._id)}
                                     className="flex items-center space-x-2 p-2 text-gray-500 hover:bg-red-100 hover:text-red-500 w-full"
@@ -323,7 +288,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                                     onChange={(e) =>
                                       setEditTitle(e.target.value)
                                     }
-                                    className="p-2 rounded-md  w-full bg-gray-700 text-white"
+                                    className="p-2 rounded-md border border-gray-300 w-full dark:bg-gray-700 text-black"
                                     autoFocus
                                   />
                                   <button
@@ -372,22 +337,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                                   >
                                     🖋️ Rename
                                   </button>
-                                  <button
-                                    onClick={() => handleSaveChat(chat._id)}
-                                    className="flex items-center space-x-2 p-2 text-gray-500 hover:bg-gray-100 hover:text-black w-full"
-                                  >
-                                    {chat.is_saved ? (
-                                      <>
-                                        <IoSave className="text-green-500" />
-                                        <span>Saved</span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <IoSaveOutline />
-                                        <span>Save</span>
-                                      </>
-                                    )}
-                                  </button>
+                                  
                                   <button
                                     onClick={() => handleDeleteChat(chat._id)}
                                     className="flex items-center space-x-2 p-2 text-gray-500 hover:bg-red-100 hover:text-red-500 w-full"
@@ -423,7 +373,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                                           onChange={(e) =>
                                             setEditTitle(e.target.value)
                                           }
-                                          className="p-2 rounded-md  w-full dark:bg-gray-700 text-white"
+                                          className="p-2 rounded-md border border-gray-300 w-full dark:bg-gray-700 text-black"
                                           autoFocus
                                         />
                                         <button
@@ -474,24 +424,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                                         >
                                           🖋️ Rename
                                         </button>
-                                        <button
-                                          onClick={() =>
-                                            handleSaveChat(chat._id)
-                                          }
-                                          className="flex items-center space-x-2 p-2 text-gray-500 hover:bg-gray-100 hover:text-black w-full"
-                                        >
-                                          {chat.is_saved ? (
-                                            <>
-                                              <IoSave className="text-green-500" />
-                                              <span>Saved</span>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <IoSaveOutline />
-                                              <span>Save</span>
-                                            </>
-                                          )}
-                                        </button>
+                                        
                                         <button
                                           onClick={() =>
                                             handleDeleteChat(chat._id)
@@ -515,7 +448,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
         )}
       </div>
       <div className="flex flex-col bg-[#1F1F1F] text-white absolute bottom-5 max-w-sm mx-auto gap-2">
-        <div className="flex flex-col bg-[#0051FF] p-8 rounded-2xl relative">
+        <div className="flex flex-col bg-[#0051FF] p-4 rounded-2xl relative">
           <img src={shape1} className="absolute top-0 right-0" alt="" />
           <img src={shape2} className="absolute top-8 right-0" alt="" />
           <img src={shape3} className="absolute bottom-0 left-0" alt="" />
@@ -526,24 +459,21 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
             <p>Unlock powerful features</p>
             <p>with our pro upgrade today!</p>
           </div>
-          {userData?.subscription_status === "not_subscribed" &&
-            isSidebarOpen && (
-              <Link
-                to={"/upgrade"}
-                className="py-3 px-16 rounded-md bg-gradient-to-r from-[#FF00AA] to-[#01B9F9] text-white text-center font-semibold"
-              >
-                Upgrade To Pro
-              </Link>
-            )}
+          {/* {userData?.subscription_status === "not_subscribed" && isSidebarOpen && ( */}
+          <Link
+            to={"/upgrade"}
+            className="py-3 px-16 rounded-md bg-gradient-to-r from-[#FF00AA] to-[#01B9F9] text-white text-center font-semibold"
+          >
+            Upgrade To Pro
+          </Link>
+          {/* // )} */}
         </div>
         <Link
           to={"/editProfile"}
           className="flex items-center px-4 py-2 rounded-lg bg-[#282A30] gap-4"
         >
           <img
-            src={
-              user?.profileImage
-            }
+            src={user?.profileImage}
             alt=""
             className="w-12 h-12 rounded-full object-cover"
           />

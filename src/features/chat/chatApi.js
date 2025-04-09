@@ -1,4 +1,4 @@
-import { apiSlice } from "../api/apiSlice"
+import { apiSlice } from "../api/apiSlice";
 
 export const chatApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -16,12 +16,13 @@ export const chatApi = apiSlice.injectEndpoints({
 
     // Start a new chat or continue an existing one
     sendMessage: builder.mutation({
-      query: ({ chatId, userMessage }) => ({
+      query: ({ chatId, userMessage, imageUrls }) => ({
         url: "api/chatbot/message",
         method: "POST",
         body: {
           chatId: chatId || undefined,
           userMessage,
+          imageUrls: imageUrls || undefined,
         },
       }),
       invalidatesTags: (result) => ["Chats", { type: "Chat", id: result?.chatHistory?.id }],
@@ -56,19 +57,9 @@ export const chatApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (result, error, chatId) => ["Chats", { type: "Chat", id: chatId }],
     }),
-
-    // Upload files for chat
-    uploadChatFiles: builder.mutation({
-      query: (formData) => ({
-        url: "api/chatbot/upload-files",
-        method: "POST",
-        body: formData,
-        formData: true,
-      }),
-    }),
   }),
   overrideExisting: true,
-})
+});
 
 export const {
   useGetAllChatsQuery,
@@ -77,5 +68,4 @@ export const {
   useRenameChatMutation,
   useDeleteChatMutation,
   useSaveChatMutation,
-  useUploadChatFilesMutation,
-} = chatApi
+} = chatApi;
