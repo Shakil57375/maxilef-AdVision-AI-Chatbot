@@ -1,145 +1,81 @@
-import { apiSlice } from "../api/apiSlice";
+import { apiSlice } from "../api/apiSlice"
 
 export const chatApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getChats: builder.query({
-      query: () => "/chat_app/get_all_chat_list_of_user/",
-      providesTags: [{ type: "Chats", id: "LIST" }],
-    }),
-    getChatContents: builder.query({
-      query: (chatId) => `/chat_app/get_chat_contents/${chatId}/`,
-      providesTags: (result, error, arg) => [{ type: "Chats", id: arg }],
+    // Get all chats for the current user
+    getAllChats: builder.query({
+      query: () => "api/chatbot/all-chats",
+      providesTags: ["Chats"],
     }),
 
-    createChat: builder.mutation({
-      query: (message) => ({
-        url: "/chat_app/create_chat/",
-        method: "POST",
-        body: { text_content: message },
-      }),
-      invalidatesTags: [{ type: "Chats", id: "LIST" }],
+    // Get a specific chat by ID
+    getChatById: builder.query({
+      query: (chatId) => `api/chatbot/history/${chatId}`,
+      providesTags: (result, error, id) => [{ type: "Chat", id }],
     }),
 
-    addMessageToChat: builder.mutation({
-      query: ({ chatId, message }) => ({
-        url: `/chat_app/add_message_to_chat/${chatId}/`,
+    // Start a new chat or continue an existing one
+    sendMessage: builder.mutation({
+      query: ({ chatId, userMessage }) => ({
+        url: "api/chatbot/message",
         method: "POST",
-        body: { text_content: message },
+        body: {
+          chatId: chatId || undefined,
+          userMessage,
+        },
       }),
-      invalidatesTags: (result, error, { chatId }) => [{ type: "Chats", id: chatId }],
+      invalidatesTags: (result) => ["Chats", { type: "Chat", id: result?.chatHistory?.id }],
     }),
-    pinChat: builder.mutation({
-      query: ({ chatId, pinDate }) => ({
-        url: `/chat_app/pin_a_chat/${chatId}/`,
-        method: "POST",
-        body: { pin_date: pinDate },
+
+    // Update chat name
+    renameChat: builder.mutation({
+      query: ({ chatId, newTitle }) => ({
+        url: `api/chatbot/update-chat-name/${chatId}`,
+        method: "PUT",
+        body: {
+          newChatName: newTitle,
+        },
       }),
-      invalidatesTags: ["Chats"], // Refetch edited chats
+      invalidatesTags: (result, error, { chatId }) => ["Chats", { type: "Chat", id: chatId }],
     }),
-    unpinChat: builder.mutation({
+
+    // Delete a chat
+    deleteChat: builder.mutation({
       query: (chatId) => ({
-        url: `/chat_app/unpin_a_chat/${chatId}/`,
-        method: "POST",
+        url: `api/chatbot/delete-chat/${chatId}`,
+        method: "DELETE",
       }),
       invalidatesTags: ["Chats"],
     }),
-    deleteChat: builder.mutation({
-      query: (chatId) => ({
-        url: `/chat_app/delete_a_chat/${chatId}/`,
-        method: "DELETE",
-      }),
-      invalidatesTags: [{ type: "Chats", id: "EditedChats" }, { type: "Chats", id: "LIST" }], // Invalidate both EditedChats and Sidebar list
-    }),
 
+    // Save/pin a chat
     saveChat: builder.mutation({
       query: (chatId) => ({
-        url: `/chat_app/save_a_chat/${chatId}/`,
+        url: `api/chatbot/save-chat/${chatId}`,
         method: "POST",
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Chats", id: "LIST" },
-        { type: "Chats", id: arg },
-      ],
-    }),
-    renameChat: builder.mutation({
-      query: ({ chatId, newTitle }) => ({
-        url: `/chat_app/update_chat_title/${chatId}/`,
-        method: "POST",
-        body: { chat_title: newTitle }, // Pass the new chat title
-      }),
-      invalidatesTags: (result, error, { chatId }) => [
-        { type: "Chats", id: "LIST" }, // Refresh chat list
-        { type: "Chats", id: chatId }, // Refresh the specific chat
-      ],
+      invalidatesTags: (result, error, chatId) => ["Chats", { type: "Chat", id: chatId }],
     }),
 
-    getAllEditedChats: builder.query({
-      query: () => `/chat_app/get_all_edited_chat/`,
-      providesTags: ["EditedChats"],
-    }),
-    postEditedChat: builder.mutation({
-      query: ({ chatId, content }) => ({
-        url: `/chat_app/edit_conversation/${chatId}/`,
+    // Upload files for chat
+    uploadChatFiles: builder.mutation({
+      query: (formData) => ({
+        url: "api/chatbot/upload-files",
         method: "POST",
-        body: { content },
+        body: formData,
+        formData: true,
       }),
-      invalidatesTags: ["EditedChats"],
     }),
-    pinEditedChat: builder.mutation({
-      query: ({ chatId, pinDate }) => ({
-        url: `/chat_app/pin_edited_chat/${chatId}/`, // `chatId` goes here
-        method: "POST",
-        body: { pin_date: pinDate }, // `pinDate` goes here
-      }),      
-      invalidatesTags: ["EditedChats"], // Trigger refresh
-    }),
-    unpinEditedChat: builder.mutation({
-      query: (chatId) => ({
-        url: `/chat_app/unpin_edited_chat/${chatId}/`,
-        method: "POST",
-      }),
-      invalidatesTags: ["EditedChats"], // Trigger refresh
-    }),
-    deleteEditedChat: builder.mutation({
-      query: (chatId) => ({
-        url: `/chat_app/delete_edited_chat/${chatId}/`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["EditedChats"], // Trigger refresh
-    }),
-    getSingleEditedChat: builder.query({
-      query: (chatId) => `/chat_app/get_a_edited_chat/${chatId}/`,
-      providesTags: (result, error, arg) => [{ type: "EditedChats", id: arg }],
-    }),
-    updateEditedChat: builder.mutation({
-      query: ({ chatId, content }) => ({
-        url: `/chat_app/update_edited_conversation/${chatId}/`,
-        method: "PATCH",
-        body: { content },
-      }),
-      invalidatesTags: ["EditedChats"],
-    }),
-    
   }),
   overrideExisting: true,
-});
-
+})
 
 export const {
-  useGetChatsQuery,
-  useGetChatContentsQuery,
-  useCreateChatMutation,
-  useAddMessageToChatMutation,
-  usePinChatMutation,
-  useUnpinChatMutation,
+  useGetAllChatsQuery,
+  useGetChatByIdQuery,
+  useSendMessageMutation,
+  useRenameChatMutation,
   useDeleteChatMutation,
   useSaveChatMutation,
-  useRenameChatMutation,
-  usePostEditedChatMutation,
-  useGetAllEditedChatsQuery,
-  usePinEditedChatMutation,
-  useUnpinEditedChatMutation,
-  useDeleteEditedChatMutation,
-  useGetSingleEditedChatQuery,
-  useUpdateEditedChatMutation,
-} = chatApi;
+  useUploadChatFilesMutation,
+} = chatApi

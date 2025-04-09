@@ -33,10 +33,9 @@ import PrivacyPolicyPage from "./components/Modals/PrivacyAndPolicyModal";
 import TermsAndConditionsPage from "./components/Modals/TermsAndCondtionModal";
 
 function MainContent() {
-  const location = useLocation(); // Get the current route path
+  const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // List of routes where Header and Sidebar should be displayed
   const routesWithHeaderAndSidebar = [
     "/",
     "/chat/:id",
@@ -56,13 +55,11 @@ function MainContent() {
     "/privacyAndPolicy",
   ];
 
-  // Check if the current route is one of the routes where we need Header and Sidebar
   const showHeaderAndSidebar = routesWithHeaderAndSidebar.some((route) => {
     const match = new RegExp("^" + route.replace(":id", "[^/]+") + "$");
     return match.test(location.pathname);
   });
 
-  // Dynamically set the class based on the route
   const containerClass =
     location.pathname === "/home"
       ? "flex-1 flex flex-col"
@@ -86,10 +83,7 @@ function MainContent() {
               path="/"
               element={
                 <PrivateRoute>
-                  <ChatArea
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                  />
+                  <ChatArea />
                 </PrivateRoute>
               }
             />
@@ -136,11 +130,7 @@ function MainContent() {
             />
             <Route
               path="/verificationCode"
-              element={
-                // <PublicRoute>
-                  <ModalForVerificationCode />
-                // {/* </PublicRoute> */}
-              }
+              element={<ModalForVerificationCode />}
             />
             <Route
               path="/verifyForgetPasswordOtp"
@@ -191,10 +181,7 @@ function MainContent() {
             />
             <Route path="/terms" element={<TermsAndConditionsPage />} />
             <Route path="/aboutMe" element={<ModalForAboutMe />} />
-            <Route
-              path="/privacyAndPolicy"
-              element={<PrivacyPolicyPage />}
-            />
+            <Route path="/privacyAndPolicy" element={<PrivacyPolicyPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>

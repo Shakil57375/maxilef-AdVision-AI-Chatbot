@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useSendFeedbackMutation } from "../../features/helpAndSupport/helpAndSupportApi";
+import { selectUser } from "../../features/auth/authSlice";
+import { useSelector } from "react-redux";
 
 export const HelpAndSupportPage = () => {
   const {
@@ -13,15 +15,15 @@ export const HelpAndSupportPage = () => {
   } = useForm();
   const navigate = useNavigate();
   const location = useLocation();
-
+  const user = useSelector(selectUser); // Get user data from Redux store
   // RTK Query Mutation
   const [sendFeedback, { isLoading }] = useSendFeedbackMutation();
 
   const onSubmit = async (data) => {
     try {
       const response = await sendFeedback({
-        email: data.email,
-        query: data.description,
+        email: user?.email,
+        description: data.description,
       }).unwrap();
       toast.success(response?.Message || "Feedback submitted successfully!");
       reset(); // Reset form fields
