@@ -8,7 +8,7 @@ import { selectAccessToken } from "../../features/auth/authSlice";
 
 const TermsAndConditionsPage = () => {
   const navigate = useNavigate();
-  const token = useSelector(selectAccessToken); // Get the token from Redux store
+  const token = useSelector(selectAccessToken); // Get the token from Redux  store
   const [content, setContent] = useState(""); // State to store fetched content
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state

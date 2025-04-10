@@ -108,8 +108,6 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
     navigate("/");
   };
 
-
-
   const handleDeleteChat = async (chatId) => {
     try {
       await deleteChat(chatId).unwrap();
@@ -195,7 +193,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                           <h2 className="text-white font-semibold text-lg">
                             Today
                           </h2>
-                          {groupedChats.today.reverse().map((chat) => (
+                          {groupedChats.today.map((chat) => (
                             <div
                               key={chat._id}
                               className="relative flex items-center group"
@@ -257,7 +255,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                                   >
                                     🖋️ Rename
                                   </button>
-                                  
+
                                   <button
                                     onClick={() => handleDeleteChat(chat._id)}
                                     className="flex items-center space-x-2 p-2 text-gray-500 hover:bg-red-100 hover:text-red-500 w-full"
@@ -275,7 +273,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                           <h2 className="text-white font-semibold text-lg">
                             Yesterday
                           </h2>
-                          {groupedChats.yesterday.reverse().map((chat) => (
+                          {groupedChats.yesterday.map((chat) => (
                             <div
                               key={chat._id}
                               className="relative flex items-center group"
@@ -337,7 +335,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                                   >
                                     🖋️ Rename
                                   </button>
-                                  
+
                                   <button
                                     onClick={() => handleDeleteChat(chat._id)}
                                     className="flex items-center space-x-2 p-2 text-gray-500 hover:bg-red-100 hover:text-red-500 w-full"
@@ -358,85 +356,83 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                               <h2 className="text-white font-semibold text-lg">
                                 {format(new Date(date), "MMMM d, yyyy")}
                               </h2>
-                              {groupedChats.other[date]
-                                .reverse()
-                                .map((chat) => (
-                                  <div
-                                    key={chat._id}
-                                    className="relative flex items-center group"
-                                  >
-                                    {editChatId === chat._id ? (
-                                      <div className="flex items-center w-full pr-5">
-                                        <input
-                                          type="text"
-                                          value={editTitle}
-                                          onChange={(e) =>
-                                            setEditTitle(e.target.value)
-                                          }
-                                          className="p-2 rounded-md border border-gray-300 w-full dark:bg-gray-700 text-black"
-                                          autoFocus
-                                        />
-                                        <button
-                                          className="ml-2 p-2 bg-gradient-to-r from-[#FF00AA] to-[#01B9F9] text-white rounded"
-                                          onClick={handleSaveEdit}
-                                        >
-                                          Save
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      <NavLink
-                                        to={`/chat/${chat._id}`}
-                                        className={({ isActive }) =>
-                                          `flex-grow text-left p-2 rounded-md transition-colors mx-1 ${
-                                            isActive
-                                              ? "text-black bg-indigo-100 font-bold"
-                                              : "hover:bg-gray-100 hover:text-black"
-                                          }`
+                              {groupedChats.other[date].map((chat) => (
+                                <div
+                                  key={chat._id}
+                                  className="relative flex items-center group"
+                                >
+                                  {editChatId === chat._id ? (
+                                    <div className="flex items-center w-full pr-5">
+                                      <input
+                                        type="text"
+                                        value={editTitle}
+                                        onChange={(e) =>
+                                          setEditTitle(e.target.value)
                                         }
+                                        className="p-2 rounded-md border border-gray-300 w-full dark:bg-gray-700 text-black"
+                                        autoFocus
+                                      />
+                                      <button
+                                        className="ml-2 p-2 bg-gradient-to-r from-[#FF00AA] to-[#01B9F9] text-white rounded"
+                                        onClick={handleSaveEdit}
                                       >
-                                        {chat.chat_name || "Untitled Chat"}
-                                      </NavLink>
-                                    )}
-                                    <button
-                                      className="absolute right-0 p-1 rounded-full"
-                                      onClick={() =>
-                                        setShowDropdown(
-                                          showDropdown === chat._id
-                                            ? null
-                                            : chat._id
-                                        )
+                                        Save
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <NavLink
+                                      to={`/chat/${chat._id}`}
+                                      className={({ isActive }) =>
+                                        `flex-grow text-left p-2 rounded-md transition-colors mx-1 ${
+                                          isActive
+                                            ? "text-black bg-indigo-100 font-bold"
+                                            : "hover:bg-gray-100 hover:text-black"
+                                        }`
                                       }
                                     >
-                                      <IoEllipsisVertical size={18} />
-                                    </button>
-                                    {showDropdown === chat._id && (
-                                      <div
-                                        className="absolute top-8 right-4 w-40 bg-white shadow-lg rounded-lg z-10"
-                                        ref={dropdownRef}
+                                      {chat.chat_name || "Untitled Chat"}
+                                    </NavLink>
+                                  )}
+                                  <button
+                                    className="absolute right-0 p-1 rounded-full"
+                                    onClick={() =>
+                                      setShowDropdown(
+                                        showDropdown === chat._id
+                                          ? null
+                                          : chat._id
+                                      )
+                                    }
+                                  >
+                                    <IoEllipsisVertical size={18} />
+                                  </button>
+                                  {showDropdown === chat._id && (
+                                    <div
+                                      className="absolute top-8 right-4 w-40 bg-white shadow-lg rounded-lg z-10"
+                                      ref={dropdownRef}
+                                    >
+                                      <button
+                                        onClick={() => {
+                                          setEditChatId(chat._id);
+                                          setEditTitle(chat.chat_name);
+                                          setShowDropdown(null);
+                                        }}
+                                        className="flex items-center space-x-2 p-2 text-gray-500 w-full"
                                       >
-                                        <button
-                                          onClick={() => {
-                                            setEditChatId(chat._id);
-                                            setEditTitle(chat.chat_name);
-                                            setShowDropdown(null);
-                                          }}
-                                          className="flex items-center space-x-2 p-2 text-gray-500 w-full"
-                                        >
-                                          🖋️ Rename
-                                        </button>
-                                        
-                                        <button
-                                          onClick={() =>
-                                            handleDeleteChat(chat._id)
-                                          }
-                                          className="flex items-center space-x-2 p-2 text-gray-500 hover:bg-red-100 hover:text-red-500 w-full"
-                                        >
-                                          🗑️ Delete
-                                        </button>
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
+                                        🖋️ Rename
+                                      </button>
+
+                                      <button
+                                        onClick={() =>
+                                          handleDeleteChat(chat._id)
+                                        }
+                                        className="flex items-center space-x-2 p-2 text-gray-500 hover:bg-red-100 hover:text-red-500 w-full"
+                                      >
+                                        🗑️ Delete
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
                             </div>
                           ))}
                     </>
