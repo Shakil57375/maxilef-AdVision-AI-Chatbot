@@ -1,43 +1,66 @@
-import { useState } from "react"
-import toast from "react-hot-toast"
-import { motion } from "framer-motion"
-import { IoMdClose } from "react-icons/io"
-import { FaCheck, FaTimes } from "react-icons/fa"
-import { useNavigate } from "react-router-dom"
-import { useUpgradePlanMutation } from "../features/subscription/subscriptionApi"
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { motion } from "framer-motion";
+import { IoMdClose } from "react-icons/io";
+import { FaCheck, FaTimes } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import WholeWebsiteLoader from "../components/Loader/WholeWebsiteLoader";
+import {
+  useCreateStripeSessionMutation,
+  useGetActivePackagesQuery,
+} from "../features/subscription/subscriptionApi";
 
 export function UpgradePage() {
-  const [upgradePlan] = useUpgradePlanMutation()
-  const [loadingPlanId, setLoadingPlanId] = useState(null)
-  const navigate = useNavigate()
+  const [loadingPlanId, setLoadingPlanId] = useState(null);
+  const navigate = useNavigate();
 
-  const handleUpgrade = async (plan) => {
-    if (plan === "free") {
-      // If it's the free plan, just show a message
-      toast.success("You are already using the free plan", { duration: 1000 })
-      return
-    }
+  // Fetch active packages to get packId
+  const {
+    data: packagesData,
+    isLoading,
+    isError,
+    error,
+  } = useGetActivePackagesQuery();
 
-    setLoadingPlanId(plan)
-    try {
-      const response = await upgradePlan({ subscription_plan: plan }).unwrap()
-      if (response?.checkout_url) {
-        window.location.href = response.checkout_url
-      } else {
-        toast.error(response?.Message || "Upgrade failed. Please try again.", { duration: 1000 })
-      }
-    } catch (error) {
-      console.error("Upgrade error:", error)
-      toast.error("Failed to upgrade. Please try again.", { duration: 1000 })
-    } finally {
-      setLoadingPlanId(null)
-    }
-  }
+  // Mutation to create a Stripe session
+  const [createStripeSession] = useCreateStripeSessionMutation();
 
   const onClose = () => {
-    navigate(-1)
-  }
+    navigate(-1);
+  };
 
+  // Handle the "Buy Now" button click
+  const handleBuyNow = async (packId) => {
+    setLoadingPlanId(packId);
+    try {
+      const response = await createStripeSession(packId).unwrap();
+      if (response.success && response.url) {
+        // Redirect to Stripe checkout
+        window.location.href = response.url;
+      } else {
+        toast.error("Failed to create Stripe session. Please try again.", {
+          duration: 2000,
+        });
+      }
+    } catch (err) {
+      console.error("Error creating Stripe session:", err);
+      toast.error("Failed to create Stripe session. Please try again.", {
+        duration: 2000,
+      });
+    } finally {
+      setLoadingPlanId(null);
+    }
+  };
+
+  // Extract packId for monthly and yearly plans from the API response
+  const monthlyPackId = packagesData?.packages?.find(
+    (pkg) => pkg.subscriptionType === "Monthly"
+  )?.packId;
+  const yearlyPackId = packagesData?.packages?.find(
+    (pkg) => pkg.subscriptionType === "Yearly"
+  )?.packId;
+
+  // Static plans data with dynamically assigned packId
   const plans = [
     {
       id: "free",
@@ -56,7 +79,7 @@ export function UpgradePage() {
       ],
     },
     {
-      id: "one", // Corresponds to "subscription_plan": "one"
+      id: monthlyPackId || "one", // Use fetched packId, fallback to "one"
       name: "Standard Plan",
       price: "$14.44",
       period: "/ Month",
@@ -71,7 +94,7 @@ export function UpgradePage() {
       ],
     },
     {
-      id: "two", // Corresponds to "subscription_plan": "two"
+      id: yearlyPackId || "two", // Use fetched packId, fallback to "two"
       name: "Premium Plan",
       price: "$0",
       period: "/ 30 Days",
@@ -85,7 +108,37 @@ export function UpgradePage() {
         { text: "Exclusive updates & priority features", included: true },
       ],
     },
-  ]
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a]">
+        <WholeWebsiteLoader />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a] text-white">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-500 mb-4">
+            Error Loading Plans
+          </h1>
+          <p>
+            {error?.data?.message ||
+              "An error occurred while fetching subscription plans."}
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white p-4 md:p-8">
@@ -96,8 +149,13 @@ export function UpgradePage() {
         transition={{ duration: 0.5 }}
       >
         <div className="flex justify-between items-center mb-12">
-          <h1 className="text-2xl md:text-3xl font-bold text-blue-500">Subscriptions Plan</h1>
-          <button onClick={onClose} className="text-blue-500 hover:text-blue-400">
+          <h1 className="text-2xl md:text-3xl font-bold text-blue-500">
+            Subscriptions Plan
+          </h1>
+          <button
+            onClick={onClose}
+            className="text-blue-500 hover:text-blue-400"
+          >
             <IoMdClose className="w-6 h-6" />
           </button>
         </div>
@@ -107,7 +165,9 @@ export function UpgradePage() {
             <div
               key={plan.id}
               className={`border rounded-lg overflow-hidden ${
-                plan.isPopular ? "border-blue-500 bg-blue-600" : "border-blue-500 bg-[#212121]"
+                plan.isPopular
+                  ? "border-blue-500 bg-blue-600"
+                  : "border-blue-500 bg-[#212121]"
               }`}
             >
               {plan.isPopular && (
@@ -117,7 +177,11 @@ export function UpgradePage() {
               )}
 
               <div className="p-6">
-                <h3 className={`text-xl font-bold mb-2 ${plan.isPopular ? "text-white" : "text-white"}`}>
+                <h3
+                  className={`text-xl font-bold mb-2 ${
+                    plan.isPopular ? "text-white" : "text-white"
+                  }`}
+                >
                   {plan.name}
                 </h3>
 
@@ -144,13 +208,24 @@ export function UpgradePage() {
                 </ul>
 
                 <button
-                  onClick={() => handleUpgrade(plan.id)}
+                  onClick={() => {
+                    if (plan.id === "free") return; // Do nothing for free plan
+                    handleBuyNow(plan.id);
+                  }}
                   disabled={loadingPlanId === plan.id}
                   className={`w-full py-3 rounded-lg font-medium transition-colors ${
-                    plan.id === "free" ? "bg-blue-600 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"
+                    plan.id === "free"
+                      ? "bg-blue-600 text-white"
+                      : "text-blue-600 bg-white"
+                  } ${
+                    loadingPlanId === plan.id
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
                   }`}
                 >
-                  {loadingPlanId === plan.id ? "Processing..." : plan.buttonText}
+                  {loadingPlanId === plan.id
+                    ? "Processing..."
+                    : plan.buttonText}
                 </button>
               </div>
             </div>
@@ -158,8 +233,7 @@ export function UpgradePage() {
         </div>
       </motion.div>
     </div>
-  )
+  );
 }
 
-export default UpgradePage
-
+export default UpgradePage;

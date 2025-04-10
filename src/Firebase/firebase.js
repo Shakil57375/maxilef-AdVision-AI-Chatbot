@@ -5,14 +5,14 @@ import { initializeApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCtokxoXM4XlK_j5sFe0xLvIdLUqCWCbf0",
-  authDomain: "ag-court-1f9ea.firebaseapp.com",
-  projectId: "ag-court-1f9ea",
-  storageBucket: "ag-court-1f9ea.firebasestorage.app",
-  messagingSenderId: "921561902533",
-  appId: "1:921561902533:web:8ad5e06651b7873cc72fac"
+  apiKey: "AIzaSyDhejZx3MXIQciEZHmrceUloYAo0QwqZdY",
+  authDomain: "maxilef.firebaseapp.com",
+  projectId: "maxilef",
+  storageBucket: "maxilef.firebasestorage.app",
+  messagingSenderId: "764469192648",
+  appId: "1:764469192648:web:f922a4cc4966e49da902fd"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export  {app};
+export {app}

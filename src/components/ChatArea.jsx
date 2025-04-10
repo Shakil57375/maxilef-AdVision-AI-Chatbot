@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { IoAttach, IoSendSharp } from "react-icons/io5";
 import "react-datepicker/dist/react-datepicker.css";
@@ -18,18 +18,25 @@ import "./ChatArea.css";
 import { RichTextDisplay } from "./Modals/RichTextDisplay";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useGetAllChatsQuery } from "../features/chat/chatApi";
 
 export function ChatArea() {
   const { id: currentChatId } = useParams();
-  const { setCurrentChat, currentChatId: contextChatId, setCurrentChatId } = useChat();
+  const {
+    setCurrentChat,
+    currentChatId: contextChatId,
+    setCurrentChatId,
+  } = useChat();
   const navigate = useNavigate();
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
   const user = useSelector(selectUser);
   const token = useSelector((state) => state.auth.accessToken);
-
-  const emailHash = user?.email ? md5(user.email.trim().toLowerCase()) : "default";
+  const { data, refetch } = useGetAllChatsQuery();
+  const emailHash = user?.email
+    ? md5(user.email.trim().toLowerCase())
+    : "default";
   const [input, setInput] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const inputRef = useRef(null);
@@ -70,13 +77,13 @@ export function ChatArea() {
     }
   }, [currentChatId, token]);
 
-  const smoothScrollToBottom = () => {
+  const smoothScrollToBottom = useCallback(() => {
     const chatContainer = chatContainerRef.current;
     if (!chatContainer) return;
 
     const start = chatContainer.scrollTop;
     const end = chatContainer.scrollHeight;
-    const duration = 2000;
+    const duration = 300;
     const startTime = performance.now();
 
     const animateScroll = (currentTime) => {
@@ -87,11 +94,13 @@ export function ChatArea() {
     };
 
     requestAnimationFrame(animateScroll);
-  };
+  }, []);
 
   useEffect(() => {
-    if (chatContainerRef.current) smoothScrollToBottom();
-  }, [chatMessages]);
+    if (chatContainerRef.current) {
+      smoothScrollToBottom();
+    }
+  }, [chatMessages, smoothScrollToBottom]);
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
@@ -103,15 +112,15 @@ export function ChatArea() {
 
     if (!file.type.startsWith("image/")) {
       toast.error("Only image files are allowed.", { duration: 2000 });
-      return;
-    }
-
-    if (selectedImage) {
-      toast.error("You can only upload one image at a time.", { duration: 2000 });
+      // Reset the file input even when there's an error
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
       return;
     }
 
     setSelectedImage(file);
+    // Don't reset here - we want to keep the file selected
   };
 
   const handleAttachClick = () => {
@@ -121,7 +130,13 @@ export function ChatArea() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!input.trim() && !selectedImage) return;
+    // Validate that either text or image is provided
+    if (!input.trim() && !selectedImage) {
+      toast.error("Please enter a message or upload an image", {
+        duration: 2000,
+      });
+      return;
+    }
 
     const tempMessageId = `temp-${Date.now()}`;
     const userMessage = {
@@ -129,10 +144,14 @@ export function ChatArea() {
       sent_by: "User",
       text_content: input,
       timestamp: new Date().toISOString(),
+      // Add image preview to the message object if an image is selected
+      image_url: selectedImage ? URL.createObjectURL(selectedImage) : null,
     };
 
-    // Add user message instantly
-    setChatMessages((prev) => (currentChatId ? [...prev, userMessage] : [userMessage]));
+    // Add user message instantly to the UI
+    setChatMessages((prev) =>
+      currentChatId ? [...prev, userMessage] : [userMessage]
+    );
     setInput("");
     setIsAiLoading(true);
 
@@ -171,13 +190,16 @@ export function ChatArea() {
 
         if (!currentChatId) {
           navigate(`/chat/${newChatId}`);
+          refetch();
         }
       }
 
       setSelectedImage(null);
     } catch (error) {
       console.error("Error sending message:", error);
-      setChatMessages((prev) => prev.filter((msg) => msg._id !== tempMessageId));
+      setChatMessages((prev) =>
+        prev.filter((msg) => msg._id !== tempMessageId)
+      );
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -185,6 +207,10 @@ export function ChatArea() {
       });
     } finally {
       setIsAiLoading(false);
+      // Reset the file input after submission
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -194,7 +220,9 @@ export function ChatArea() {
     "Processing...",
     "Generating response...",
   ];
-  const [currentThinkingMessage, setCurrentThinkingMessage] = useState(thinkingMessages[0]);
+  const [currentThinkingMessage, setCurrentThinkingMessage] = useState(
+    thinkingMessages[0]
+  );
 
   useEffect(() => {
     if (isAiLoading) {
@@ -214,7 +242,10 @@ export function ChatArea() {
           <WholeWebsiteLoader />
         </div>
       ) : (
-        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto p-4 space-y-4"
+        >
           {chatMessages.length === 0 && !currentChatId ? (
             <div>
               <h1 className="text-2xl font-bold my-6 text-white text-center">
@@ -236,16 +267,18 @@ export function ChatArea() {
                   Ask me anything I'll do my best to help.
                 </h1>
                 <p className="text-center text-zinc-400 mb-8 max-w-lg mx-auto">
-                  Get expert guidance powered by AI agents specializing in Sales,
-                  Marketing, and Negotiation. While I provide data-driven insights
-                  and strategic recommendations, remember that I'm just a robot!
-                  Always verify information and make informed decisions before
-                  implementing any advice.
+                  Get expert guidance powered by AI agents specializing in
+                  Sales, Marketing, and Negotiation. While I provide data-driven
+                  insights and strategic recommendations, remember that I'm just
+                  a robot! Always verify information and make informed decisions
+                  before implementing any advice.
                 </p>
                 <div className="border border-blue-800 rounded-lg p-4 mb-8 max-w-md mx-auto">
                   <div className="flex flex-col items-center">
                     <label htmlFor="image-upload" className="mb-2">
-                      <span className="text-white font-medium">Upload Image</span>
+                      <span className="text-white font-medium">
+                        Upload Image
+                      </span>
                       <input
                         id="image-upload"
                         type="file"
@@ -265,14 +298,12 @@ export function ChatArea() {
                   key={message.id || message._id}
                   className={`flex ${
                     message.sent_by === "User"
-                      ? "flex-row-reverse items-center gap-2"
-                      : "flex-row"
+                      ? "flex-row-reverse items-start gap-2"
+                      : "flex-row items-start"
                   }`}
                 >
                   {message.sent_by === "User" && (
-                    <Link to={"/editProfile"}>
-                      {/* User image logic */}
-                    </Link>
+                    <Link to={"/editProfile"}>{/* User image logic */}</Link>
                   )}
                   <div
                     className={`max-w-[70%] rounded-lg p-4 ${
@@ -281,6 +312,16 @@ export function ChatArea() {
                         : "bg-[#0051FF80] text-white"
                     }`}
                   >
+                    {/* Display image if available */}
+                    {message.image_url && (
+                      <div className="mb-2">
+                        <img
+                          src={message.image_url || "/placeholder.svg"}
+                          alt=""
+                          className="max-w-2xl max-h-32 rounded-lg"
+                        />
+                      </div>
+                    )}
                     <RichTextDisplay content={message.text_content} />
                   </div>
                 </div>
@@ -289,7 +330,9 @@ export function ChatArea() {
                 <div className="flex flex-col rounded-lg p-4 max-w-[70%]">
                   <div className="flex items-center gap-2">
                     <Loader />
-                    <span className="text-white text-opacity-80">{currentThinkingMessage}</span>
+                    <span className="text-white text-opacity-80">
+                      {currentThinkingMessage}
+                    </span>
                   </div>
                 </div>
               )}
@@ -297,22 +340,43 @@ export function ChatArea() {
           )}
         </div>
       )}
-      <form onSubmit={handleSubmit} className="p-4 flex flex-col border-t relative bottom-0">
+      <form
+        onSubmit={handleSubmit}
+        className="p-4 flex flex-col border-t relative bottom-0"
+      >
+        {/* Image preview area */}
         {selectedImage && (
-          <div className="mb-2 flex items-center gap-2">
-            <img
-              src={URL.createObjectURL(selectedImage)}
-              alt="Selected"
-              className="h-16 w-16 object-cover rounded"
-            />
-            <span className="text-sm text-white">{selectedImage.name}</span>
-            <button
-              type="button"
-              className="text-gray-400 hover:text-white"
-              onClick={() => setSelectedImage(null)}
-            >
-              ✕
-            </button>
+          <div className="mb-2 p-2 bg-gray-800 rounded-lg">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <img
+                  src={URL.createObjectURL(selectedImage) || "/placeholder.svg"}
+                  alt="Selected"
+                  className="h-16 w-16 object-cover rounded"
+                />
+              </div>
+              <div className="flex flex-col flex-1">
+                <span className="text-sm text-white truncate">
+                  {selectedImage.name}
+                </span>
+                <span className="text-xs text-gray-400">
+                  {(selectedImage.size / 1024).toFixed(1)} KB
+                </span>
+              </div>
+              <button
+                type="button"
+                className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700"
+                onClick={() => {
+                  setSelectedImage(null);
+                  // Reset the file input when removing an image
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                  }
+                }}
+              >
+                ✕
+              </button>
+            </div>
           </div>
         )}
         <div className="flex items-center">
@@ -350,11 +414,15 @@ export function ChatArea() {
           <button
             type="submit"
             className={`ml-4 p-3 rounded-full absolute right-4 cursor-pointer ${
-              isAiLoading || isLoading || (!input.trim() && !selectedImage)
+              isAiLoading || isLoading
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "text-white"
+                : input.trim() || selectedImage
+                ? "text-white"
+                : "text-gray-400 opacity-50"
             }`}
-            disabled={isAiLoading || isLoading || (!input.trim() && !selectedImage)}
+            disabled={
+              isAiLoading || isLoading || (!input.trim() && !selectedImage)
+            }
           >
             <IoSendSharp className="text-3xl text-black dark:text-white" />
           </button>

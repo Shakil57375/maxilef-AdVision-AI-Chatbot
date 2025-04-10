@@ -2,31 +2,31 @@ import { apiSlice } from "../api/apiSlice";
 
 export const subscriptionApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    upgradePlan: builder.mutation({
-      query: ({ subscription_plan }) => ({
-        url: "/subscription_app/buy_subscription_on_web/",
-        method: "POST",
-        body: { subscription_plan }, // Correct body parameter
-      }),
-      transformResponse: (response) => {
-        console.log("Raw API response:", response);
-        return response;
-      },
+    // Fetch active packages
+    getActivePackages: builder.query({
+      query: () => "api/package/active",
+      providesTags: ["Packages"],
     }),
 
-    // Cancel subscription API
-    cancelSubscription: builder.mutation({
-      query: () => ({
-        url: "/subscription_app/cancel_subscription/",
-        method: "GET",
+    // Create a Stripe session for payment
+    createStripeSession: builder.mutation({
+      query: (packId) => ({
+        url: "api/subscription/stripe-session",
+        method: "POST",
+        body: { packId },
       }),
-      transformResponse: (response) => {
-        console.log("Cancel Subscription Response:", response);
-        return response;
-      },
+    }),
+    getSubscriptionDetails: builder.query({
+      query: () => "api/subscription/details",
+      providesTags: ["Subscription"],
+    }),
+    CancelSubscription: builder.mutation({
+      query: () => ({
+        url: "api/subscription/cancel",
+        method: "POST",
+      }),
     }),
   }),
 });
 
-export const { useUpgradePlanMutation, useCancelSubscriptionMutation } =
-  subscriptionApi;
+export const { useGetActivePackagesQuery, useCreateStripeSessionMutation, useCancelSubscriptionMutation, useGetSubscriptionDetailsQuery } = subscriptionApi;

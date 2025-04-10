@@ -2,47 +2,50 @@ import { motion } from "framer-motion";
 import { IoMdClose } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
 import { useGetUserProfileQuery } from "../../features/auth/authApi";
-import { useCancelSubscriptionMutation } from "../../features/subscription/subscriptionApi";
+import {
+  useCancelSubscriptionMutation,
+  useGetSubscriptionDetailsQuery,
+} from "../../features/subscription/subscriptionApi";
 import toast from "react-hot-toast";
 
 export default function SubscriptionDetailsPage() {
   const navigate = useNavigate();
 
-  // Fetch user profile and subscription info
-  const {
-    data: subscriptionInfo,
-    isLoading: isProfileLoading,
-    refetch: refetchUserProfile,
-  } = useGetUserProfileQuery();
+  const { data } = useGetSubscriptionDetailsQuery();
+  console.log(data?.subscription);
+  const subscriptionInfo = data?.subscription || null;
 
-  // Cancel subscription mutation
   const [cancelSubscription, { isLoading: isCancelling }] =
     useCancelSubscriptionMutation();
 
-  // Handle subscription cancellation
   const handleCancelSubscription = async () => {
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel your subscription? This action cannot be undone."
+    );
+    if (!confirmCancel) return;
+
     try {
       const response = await cancelSubscription().unwrap();
       toast.success(
         response?.Message || "Subscription cancelled successfully.",
-        { duration: 1000 }
+        { duration: 2000 }
       );
-      refetchUserProfile(); // Refresh user profile to reflect subscription status
-      navigate(-1); // Navigate back after successful cancellation
+      setTimeout(() => {
+        navigate(-1);
+      }, 2000);
     } catch (error) {
       console.error("Cancel subscription error:", error);
-      toast.error("Failed to cancel subscription. Please try again.", {
-        duration: 1000,
-      });
+      const errorMessage =
+        error?.data?.Message ||
+        "Failed to cancel subscription. Please try again.";
+      toast.error(errorMessage, { duration: 2000 });
     }
   };
 
-  // Close modal
   const onClose = () => {
     navigate(-1);
   };
 
-  // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -51,19 +54,6 @@ export default function SubscriptionDetailsPage() {
       month: "long",
       day: "numeric",
     });
-  };
-
-  // Get subscription price
-  const getSubscriptionPrice = () => {
-    if (!subscriptionInfo) return "N/A";
-
-    if (subscriptionInfo.package_name === "yearly") {
-      return "$8.30/month";
-    } else if (subscriptionInfo.package_name === "monthly") {
-      return "$12.99/month";
-    } else {
-      return "N/A";
-    }
   };
 
   return (
@@ -82,7 +72,6 @@ export default function SubscriptionDetailsPage() {
           transition={{ duration: 0.3 }}
           className="relative bg-black rounded-lg shadow-lg p-8 w-full max-w-3xl mx-4 dark:bg-gray-700 dark:text-white"
         >
-          {/* Header with close button */}
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-2xl font-bold text-blue-500">
               Subscriptions Plan
@@ -95,24 +84,16 @@ export default function SubscriptionDetailsPage() {
             </button>
           </div>
 
-          {/* Plan Type Section */}
           <div className="mb-4">
             <p className="text-white mb-2">Plan Type</p>
             <div className="border border-blue-500 rounded-lg p-4 bg-[#212121]">
               <p className="text-white text-lg">
-                {isProfileLoading
-                  ? "Loading..."
-                  : subscriptionInfo?.subscription_status === "subscribed"
-                  ? subscriptionInfo?.package_name === "yearly"
-                    ? "Standard (Yearly)"
-                    : "Standard (Monthly)"
-                  : "No Active Plan"}
+                {subscriptionInfo?.type || "N/A"}
               </p>
             </div>
           </div>
 
-          {/* Subscription Details Section */}
-          {subscriptionInfo?.subscription_status === "not_subscribed" ? (
+          {subscriptionInfo?.trialActive !== true ? (
             <div className="border border-blue-500 rounded-lg p-6 mb-6 bg-[#212121]">
               <Link
                 to="/upgrade"
@@ -127,44 +108,71 @@ export default function SubscriptionDetailsPage() {
                 <div className="flex flex-col">
                   <p className="text-white">Subscription Effective Date:</p>
                   <p className="text-gray-300">
-                    {formatDate(subscriptionInfo?.subscription_started_on)}
+                    {formatDate(subscriptionInfo?.begins)}
                   </p>
                 </div>
 
                 <div className="flex flex-col">
                   <p className="text-white">Subscription Expiry Date:</p>
                   <p className="text-gray-300">
-                    {formatDate(subscriptionInfo?.subscription_expires_on)}
+                    {formatDate(subscriptionInfo?.ends)}
                   </p>
                 </div>
 
                 <div className="flex flex-col">
                   <p className="text-white">Subscription Price:</p>
-                  <p className="text-gray-300">{getSubscriptionPrice()}</p>
+                  <p className="text-gray-300">
+                    {subscriptionInfo?.amount || "N/A"}
+                  </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Action Buttons */}
-          {subscriptionInfo?.subscription_status === "subscribed" && (
-            <div className="flex justify-end space-x-4 mt-8">
+            <div className="flex justify-between space-x-4 mt-8">
               <button
                 onClick={handleCancelSubscription}
                 disabled={isCancelling}
-                className="py-2 px-6 border border-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
+                className={`py-2 px-6 border border-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2 bg-red-500 ${
+                  isCancelling ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
-                {isCancelling ? "Cancelling..." : "Cancel"}
+                {isCancelling ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      />
+                    </svg>
+                    <span >Cancelling...</span>
+                  </>
+                ) : (
+                  "Cancel Subscription"
+                )}
               </button>
 
               <button
                 onClick={() => navigate("/upgrade")}
                 className="py-2 px-6 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Update
+                Update Subscription
               </button>
             </div>
-          )}
         </motion.div>
       </motion.div>
     </div>
