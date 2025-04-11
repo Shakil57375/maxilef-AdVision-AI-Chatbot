@@ -3,7 +3,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 function WholeWebsiteLoader() {
   return (
     <ClipLoader
-      color="#000000"
+      color="#ffffff"
       size={60}
     />
   );

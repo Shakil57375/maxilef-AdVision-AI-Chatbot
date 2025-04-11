@@ -3,16 +3,20 @@ import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { IoMdClose } from "react-icons/io";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import WholeWebsiteLoader from "../components/Loader/WholeWebsiteLoader";
 import {
   useCreateStripeSessionMutation,
   useGetActivePackagesQuery,
+  useGetSubscriptionDetailsQuery,
 } from "../features/subscription/subscriptionApi";
 
 export function UpgradePage() {
   const [loadingPlanId, setLoadingPlanId] = useState(null);
   const navigate = useNavigate();
+  const { data: subscriptionInfo } = useGetSubscriptionDetailsQuery();
+  console.log(subscriptionInfo);
+  // Check if the user is already subscribed
 
   // Fetch active packages to get packId
   const {
@@ -28,6 +32,28 @@ export function UpgradePage() {
   const onClose = () => {
     navigate(-1);
   };
+
+  if (
+    subscriptionInfo?.success &&
+    subscriptionInfo?.subscription?.trialActive
+  ) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a] text-white">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-500 mb-4">
+            Already Subscribed
+          </h1>
+          <p className="mb-6">You are already subscribed to a plan.</p>
+          <Link
+            to="/manageSubscription"
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Manage your subscription
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // Handle the "Buy Now" button click
   const handleBuyNow = async (packId) => {

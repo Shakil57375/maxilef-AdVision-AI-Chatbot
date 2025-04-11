@@ -11,12 +11,15 @@ import {
 } from "../../features/auth/authApi";
 import { useDispatch } from "react-redux";
 import { userUpdated } from "../../features/auth/authSlice";
+import { useGetSubscriptionDetailsQuery } from "../../features/subscription/subscriptionApi";
 
 const ProfileModal = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const { data } = useGetSubscriptionDetailsQuery();
+  const subscriptionInfo = data?.subscription || null;
   const [tempData, setTempData] = useState({
     name: "",
     email: "",
@@ -90,6 +93,16 @@ const ProfileModal = () => {
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   return (
@@ -175,7 +188,7 @@ const ProfileModal = () => {
                     Subscription
                   </label>
                   <input
-                    value={tempData?.subscription_status || ""}
+                    value={subscriptionInfo?.type || "N/A"}
                     disabled
                     className="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-700 bg-gray-700 text-white"
                   />
@@ -199,7 +212,7 @@ const ProfileModal = () => {
                   </label>
                   <input
                     type="text"
-                    value={tempData?.subscription_expires_on || ""}
+                    value={formatDate(subscriptionInfo?.ends)}
                     disabled
                     className="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-700 bg-gray-700 text-white"
                   />
