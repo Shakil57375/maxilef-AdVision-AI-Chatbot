@@ -36,7 +36,7 @@ export function UpgradePage() {
   if (
     subscriptionInfo?.success &&
     subscriptionInfo?.subscription?.trialActive
-  ) {
+  ) { 
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a] text-white">
         <div className="text-center">
