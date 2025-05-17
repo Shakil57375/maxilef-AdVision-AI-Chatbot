@@ -25,12 +25,12 @@ import ModalForLogin from "./components/Modals/LoginModal";
 import ModalForAboutMe from "./components/Modals/AboutMe";
 import SubscriptionDetails from "./components/Modals/ManageSuscription";
 import VerifyForgetPasswordOtp from "./components/Modals/VerifyForgetPasswordOtp";
-import Home from "./pages/Home/Home";
 import { PublicRoute } from "./components/PublicRoute";
-import NotFoundPage from "./pages/NotFoundPage";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 import { HelpAndSupportPage } from "./components/Modals/HelpAndSupport";
 import PrivacyPolicyPage from "./components/Modals/PrivacyAndPolicyModal";
 import TermsAndConditionsPage from "./components/Modals/TermsAndCondtionModal";
+import AppContent from "./page/Home/Home";
 
 function MainContent() {
   const location = useLocation();
@@ -87,7 +87,7 @@ function MainContent() {
                 </PrivateRoute>
               }
             />
-            <Route path="/home" element={<Home />} />
+            <Route path="/home" element={<AppContent />} />
             <Route
               path="/chat/:id"
               element={

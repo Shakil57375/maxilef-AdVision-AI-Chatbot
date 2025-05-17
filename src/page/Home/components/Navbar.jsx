@@ -127,7 +127,7 @@ const Navbar = ({ scrollToSection, refs }) => {
                 Log In
               </Link>
               <Link
-                to={"/register"}
+                to={"/signUp"}
                 className="bg-[#a855f7] hover:bg-[#9333ea] text-white px-4 py-2 rounded-md transition-colors"
               >
                 Sign Up

@@ -25,7 +25,7 @@ export function UpgradePage() {
     isError,
     error,
   } = useGetActivePackagesQuery();
-
+  console.log(packagesData);
   // Mutation to create a Stripe session
   const [createStripeSession] = useCreateStripeSessionMutation();
 
@@ -36,7 +36,7 @@ export function UpgradePage() {
   if (
     subscriptionInfo?.success &&
     subscriptionInfo?.subscription?.trialActive
-  ) { 
+  ) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a] text-white">
         <div className="text-center">
@@ -80,10 +80,11 @@ export function UpgradePage() {
 
   // Extract packId for monthly and yearly plans from the API response
   const monthlyPackId = packagesData?.packages?.find(
-    (pkg) => pkg.subscriptionType === "Monthly"
+    (pkg) => pkg.subscriptionType === "Monthly" && pkg.amount > 0
   )?.packId;
+  console.log(monthlyPackId);
   const yearlyPackId = packagesData?.packages?.find(
-    (pkg) => pkg.subscriptionType === "Yearly"
+    (pkg) => pkg.subscriptionType === "Yearly" && pkg.amount > 0
   )?.packId;
 
   // Static plans data with dynamically assigned packId
