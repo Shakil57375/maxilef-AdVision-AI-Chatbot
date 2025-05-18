@@ -12,6 +12,7 @@ import {
 import { useDispatch } from "react-redux";
 import { userUpdated } from "../../features/auth/authSlice";
 import { useGetSubscriptionDetailsQuery } from "../../features/subscription/subscriptionApi";
+import toast from "react-hot-toast";
 
 const ProfileModal = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -36,7 +37,8 @@ const ProfileModal = () => {
   const [uploadProfileImage] = useUploadProfileImageMutation();
 
   useEffect(() => {
-    if (profileData?.user) {
+    if (profileData?.user && !isUpdating) {
+      // Only update tempData and previewImage when not updating to prevent overwriting
       setTempData({
         name: profileData.user.name || "",
         email: profileData.user.email || "",
@@ -44,15 +46,19 @@ const ProfileModal = () => {
         subscription_expires_on: profileData.user.updatedAt || "",
         profileImage: profileData.user.profileImage || "",
       });
-      setPreviewImage(profileData.user.profileImage);
+      // Only set previewImage if no local image is set (i.e., on initial load or after successful upload)
+      if (!previewImage || !imageFile) {
+        setPreviewImage(profileData.user.profileImage || userImage);
+      }
     }
-  }, [profileData]);
-  dispatch(userUpdated(profileData?.user));
+    dispatch(userUpdated(profileData?.user));
+  }, [profileData, isUpdating, previewImage, imageFile]);
+
   const handleCancel = () => {
     navigate(-1);
   };
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = (e) => {
     if (!isEditing) return;
 
     const file = e.target.files[0];
@@ -78,18 +84,28 @@ const ProfileModal = () => {
       }).unwrap();
 
       // Upload profile image if a new one was selected
+      let newImageUrl = previewImage;
       if (imageFile) {
         const formData = new FormData();
         formData.append("image", imageFile);
-        await uploadProfileImage(formData).unwrap();
+        const uploadResult = await uploadProfileImage(formData).unwrap();
+        // Assuming the API returns the new image URL in uploadResult
+        newImageUrl = uploadResult.imageUrl || previewImage;
       }
 
       // Refresh profile data
       await refetch();
+      // Update previewImage with the new server image URL (if available)
+      setPreviewImage(newImageUrl);
+      setImageFile(null); // Clear the image file after successful upload
+      toast.success("Profile updated successfully!", { duration: 1000 });
       setIsEditing(false);
-      setImageFile(null);
     } catch (error) {
       console.error("Error updating profile:", error);
+      toast.error("Failed to update profile.");
+      // Revert to server image on error
+      setPreviewImage(profileData?.user?.profileImage || userImage);
+      setImageFile(null);
     } finally {
       setIsUpdating(false);
     }
