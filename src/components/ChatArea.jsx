@@ -282,7 +282,6 @@ export function ChatArea() {
                       <input
                         id="image-upload"
                         type="file"
-                        accept="image/*"
                         className="hidden"
                         onChange={handleImageChange}
                       />
