@@ -19,7 +19,7 @@ const PrivacyPolicyPage = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          "http://192.168.10.198:5006/api/policy/privacy",
+          "http://72.167.224.36:5006/api/policy/privacy",
           {
             headers: {
               Authorization: `Bearer ${token}`,

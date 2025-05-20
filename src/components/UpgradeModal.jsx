@@ -175,17 +175,6 @@ export function UpgradePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="flex justify-between items-center mb-12">
-          <h1 className="text-2xl md:text-3xl font-bold text-blue-500">
-            Subscriptions Plan
-          </h1>
-          <button
-            onClick={onClose}
-            className="text-blue-500 hover:text-blue-400"
-          >
-            <IoMdClose className="w-6 h-6" />
-          </button>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan) => (

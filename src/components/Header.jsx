@@ -107,7 +107,7 @@ export function Header({ setIsSidebarOpen }) {
         </div>
         <div className="flex items-center">
           <div className="flex items-center justify-end gap-3 relative z-50">
-            <div onClick={() =>setShowDropdown(!showDropdown)} className="cursor-pointer bg-[#D9D9D9] p-2 rounded-full">
+            <div onClick={() =>setShowDropdown(!showDropdown)} className="cursor-pointer bg-[#1F1F1F] p-2 rounded-full">
               
               <MdOutlineSettings  />
             </div>
