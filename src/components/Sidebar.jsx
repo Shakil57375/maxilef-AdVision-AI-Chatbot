@@ -179,7 +179,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                 {searchQuery ? "Search Results" : "Recent Plans"}
               </p>
               {user && (
-                <div className="space-y-4 2xl:h-[calc(100vh-550px)] h-[calc(100vh-280px)] overflow-y-auto mt-4">
+                <div className="space-y-4 2xl:h-[calc(100vh-570px)] xl:h-[calc(100vh-500px)] lg:h-[calc(100vh-540px)]  h-[calc(100vh-500px)] overflow-y-auto mt-4">
                   {isChatEmpty(groupedChats) ? (
                     <p className="text-gray-500 text-center">
                       {searchQuery
@@ -443,7 +443,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
           </div>
         )}
       </div>
-      <div className="flex flex-col bg-[#1F1F1F] text-white absolute bottom-5 max-w-sm mx-auto gap-2">
+      <div className="flex flex-col  text-white absolute bottom-5 max-w-sm mx-auto gap-2">
         <div className="flex flex-col bg-[#0051FF] p-4 rounded-2xl relative">
           <img src={shape1} className="absolute top-0 right-0" alt="" />
           <img src={shape2} className="absolute top-8 right-0" alt="" />
