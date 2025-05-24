@@ -54,7 +54,7 @@ export function AuthProvider({ children }) {
       toast.error("Incorrect email/password, please try again.", {
         duration: 1000,
       });
-      navigate("/login");
+      return
     }
   };
 
@@ -73,7 +73,7 @@ export function AuthProvider({ children }) {
     } catch (error) {
       console.error("Signup failed:", error?.data?.Error || "Unknown error");
       toast.error(
-        "This email is already registered. Please log in or use a different email address.",
+        error?.data?.Error || "An error occurred during signup. Please try again.", 
         { duration: 1000 }
       );
       // Throw the error so onSubmit can handle it

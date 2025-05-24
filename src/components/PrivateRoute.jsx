@@ -9,16 +9,8 @@ export function PrivateRoute({ children }) {
 
   // Check if user is not authenticated
   if (!user && !access) {
-    return <Navigate to="/home" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check if user is not verified
-  // if (!user?.is_verified) {
-  //   return (
-  //     <Navigate to="/verificationCode" state={{ from: location }} replace />
-  //   );
-  // }
-
-  // User meets all requirements
   return children;
 }

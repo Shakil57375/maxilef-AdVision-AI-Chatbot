@@ -102,6 +102,7 @@ const LoginPage = () => {
       setError(
         err.data?.message || "Incorrect email/password, please try again."
       );
+      return;
     }
   };
 
