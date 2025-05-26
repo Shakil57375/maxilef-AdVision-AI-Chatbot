@@ -76,7 +76,7 @@ const Navbar = ({ scrollToSection, refs }) => {
     { id: "whyUs", name: "Why Us", ref: refs.whyUsRef },
     { id: "howItWorks", name: "How it Works", ref: refs.howItWorksRef },
     { id: "about", name: "About", ref: refs.aboutUsRef },
-    { id: "reviews", name: "Reviews", ref: refs.reviewsRef },
+    // { id: "reviews", name: "Reviews", ref: refs.reviewsRef },
     { id: "pricing", name: "Pricing", ref: refs.pricingRef },
   ];
 

@@ -21,7 +21,7 @@ const AppContent = () => {
       <WhyUs forwardedRef={refs.whyUsRef} />
       <HowItWorks forwardedRef={refs.howItWorksRef} />
       <AboutUs forwardedRef={refs.aboutUsRef} />
-      <Reviews forwardedRef={refs.reviewsRef} />
+      {/* <Reviews forwardedRef={refs.reviewsRef} /> */}
       <Faq forwardedRef={refs.faqRef} />
       <Pricing forwardedRef={refs.pricingRef} />
       <Footer scrollToSection={scrollToSection} refs={refs} />

@@ -9,7 +9,7 @@ const WhyUs = ({ forwardedRef }) => {
             <img
               src={laptopImage || "/placeholder.svg"}
               alt="Laptop with Adfusion Labs"
-              className=" w-full h-full lg:w-[594px] lg:h-[616px] rounded-lg"
+              className=" h-full md:w-[554px] lg:w-[594px] lg:h-[616px] rounded-lg mx-auto"
             />
           </div>
           <div>
