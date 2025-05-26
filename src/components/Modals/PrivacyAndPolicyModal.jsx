@@ -19,7 +19,7 @@ const PrivacyPolicyPage = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          "http://72.167.224.36:5006/api/policy/privacy",
+          "http://72.167.224.36/api/policy/privacy",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ const PrivacyPolicyPage = () => {
           animate={{ scale: 1 }}
           exit={{ scale: 0.8 }}
           transition={{ duration: 0.3 }}
-          className="relative bg-black rounded-lg shadow-lg p-8 w-full max-w-3xl mx-4 dark:bg-gray-700 dark:text-white"
+          className="relative bg-black rounded-lg shadow-lg p-8 w-full max-w-3xl lg:mx-4 mx-0 dark:bg-gray-700 dark:text-white"
         >
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-2xl font-bold text-blue-500">Privacy Policy</h1>

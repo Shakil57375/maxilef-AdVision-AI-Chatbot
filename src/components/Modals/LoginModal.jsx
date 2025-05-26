@@ -36,7 +36,7 @@ const LoginPage = () => {
 
       // Send token to backend
       const response = await fetch(
-        `http://72.167.224.36:5006/api/auth/oauth/google`,
+        `http://72.167.224.36/api/auth/oauth/google`,
         {
           method: "POST",
           headers: {

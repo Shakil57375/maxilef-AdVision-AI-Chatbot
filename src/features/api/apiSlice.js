@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const baseQuery = fetchBaseQuery({
-    baseUrl: "http://72.167.224.36:5006/",
-    // http://72.167.224.36:5006/
+    baseUrl: "http://72.167.224.36/",
+    // http://72.167.224.36/
     prepareHeaders: (headers, { getState }) => {
         // Try to get token from Redux state
         const token = getState().auth?.accessToken || null;

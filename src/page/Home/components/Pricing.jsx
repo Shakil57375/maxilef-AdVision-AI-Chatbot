@@ -45,7 +45,7 @@ const Pricing = ({ forwardedRef }) => {
             </div>
             <h3 className="text-xl font-bold mb-2 mt-6">Standard</h3>
             <div className="text-3xl font-bold mb-6">
-              $14.44<span className="text-lg font-normal text-gray-400">/month</span>
+              $22.22<span className="text-lg font-normal text-gray-400">/month</span>
             </div>
 
             <ul className="space-y-4 mb-8 flex-grow">
@@ -76,9 +76,9 @@ const Pricing = ({ forwardedRef }) => {
           <div className="bg-[#0a0b1a] border border-gray-800 rounded-lg p-6 flex flex-col">
             <h3 className="text-xl font-bold mb-2">Premium</h3>
             <div className="text-3xl font-bold mb-6">
-              $144.44<span className="text-lg font-normal text-gray-400">/yearly</span>
+              $222.22<span className="text-lg font-normal text-gray-400">/yearly</span>
             </div>
-            <div className="text-sm text-green-500 mb-4">Save $28.84</div>
+            <div className="text-sm text-green-500 mb-4">Save $44.42</div>
 
             <ul className="space-y-4 mb-8 flex-grow">
               <li className="flex items-start">

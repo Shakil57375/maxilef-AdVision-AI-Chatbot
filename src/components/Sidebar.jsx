@@ -11,6 +11,8 @@ import shape1 from "../assets/Ellipse 7 (2).png";
 import shape2 from "../assets/Ellipse 8 (1).png";
 import shape3 from "../assets/Ellipse 9.png";
 import { useChat } from "../context/ChatContext";
+import userImage from "../assets/file (5).png";
+
 import {
   useGetAllChatsQuery,
   useRenameChatMutation,
@@ -32,12 +34,13 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
 
   // Fetch chats using RTK Query
   const { data: chatsData, isLoading: isChatsLoading } = useGetAllChatsQuery();
+  console.log(chatsData);
   const [renameChat] = useRenameChatMutation();
   const [deleteChat] = useDeleteChatMutation();
 
   const chats = chatsData?.chatHistories || [];
   const isLoading = isChatsLoading || isProfileLoading;
-
+  console.log(chats);
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -106,6 +109,10 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
     setCurrentChat([]);
     setCurrentChatId(null);
     navigate("/");
+    // Close sidebar on mobile after creating new chat
+    if (window.innerWidth < 1024) {
+      setIsSidebarOpen(false)
+    }
   };
 
   const handleDeleteChat = async (chatId) => {
@@ -118,6 +125,13 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
       toast.error("Failed to delete chat.", { duration: 1000 });
     }
   };
+
+  // Handle chat link clicks on mobile
+  const handleChatClick = () => {
+    if (window.innerWidth < 1024) {
+      setIsSidebarOpen(false)
+    }
+  }
 
   const isChatEmpty = (groupedChats) =>
     groupedChats.today.length === 0 &&
@@ -139,7 +153,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
 
   return (
     <div
-      className={`fixed lg:static z-50 top-0 bottom-0 h-screen ${
+      className={`fixed lg:static z-50 top-20 bottom-0 h-[calc(100vh-80px)] ${
         isSidebarOpen ? "left-0 w-80" : "-left-full lg:w-full"
       } lg:left-0 bg-[#1F1F1F] dark:bg-gray-700 transition-all duration-300 ease-in-out !text-white`}
     >
@@ -147,7 +161,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
         {isSidebarOpen && (
           <div className="bg-[#1F1F1F] dark:bg-gray-700 w-full">
             <button
-              className="py-3 px-[82px] rounded-md bg-gradient-to-r from-[#FF00AA] to-[#01B9F9] text-white text-center font-semibold mb-2 flex items-center justify-center mx-auto"
+              className="py-3 px-[82px] rounded-md bg-gradient-to-r from-[#FF00AA] to-[#01B9F9] text-white text-center font-semibold flex items-center justify-center mx-auto mt-8 mb-3"
               onClick={handleNewChat}
             >
               + New Chat
@@ -179,7 +193,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
                 {searchQuery ? "Search Results" : "Recent Plans"}
               </p>
               {user && (
-                <div className="space-y-4 2xl:h-[calc(100vh-570px)] xl:h-[calc(100vh-500px)] lg:h-[calc(100vh-540px)]  h-[calc(100vh-500px)] overflow-y-auto mt-4">
+                <div className="space-y-4 2xl:h-[calc(100vh-750px)] xl:h-[calc(100vh-700px)] lg:h-[calc(100vh-600px)]  h-[calc(100vh-600px)] overflow-y-auto mt-4">
                   {isChatEmpty(groupedChats) ? (
                     <p className="text-gray-500 text-center">
                       {searchQuery
@@ -443,41 +457,43 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
           </div>
         )}
       </div>
-      <div className="flex flex-col  text-white absolute bottom-5 max-w-sm mx-auto gap-2">
-        <div className="flex flex-col bg-[#0051FF] p-4 rounded-2xl relative">
-          <img src={shape1} className="absolute top-0 right-0" alt="" />
-          <img src={shape2} className="absolute top-8 right-0" alt="" />
-          <img src={shape3} className="absolute bottom-0 left-0" alt="" />
-          <h1 className="text-center w-full my-5 text-2xl font-bold">
-            Update Your Plan
-          </h1>
-          <div className="text-center w-full mb-5">
-            <p>Unlock powerful features</p>
-            <p>with our pro upgrade today!</p>
+      {isSidebarOpen && (
+        <div className="flex flex-col  text-white absolute bottom-5 max-w-sm mx-auto gap-2">
+          <div className="flex flex-col bg-[#0051FF] p-4 rounded-2xl relative">
+            <img src={shape1} className="absolute top-0 right-0" alt="" />
+            <img src={shape2} className="absolute top-8 right-0" alt="" />
+            <img src={shape3} className="absolute bottom-0 left-0" alt="" />
+            <h1 className="text-center w-full my-5 text-2xl font-bold">
+              Update Your Plan
+            </h1>
+            <div className="text-center w-full mb-5">
+              <p>Unlock powerful features</p>
+              <p>with our pro upgrade today!</p>
+            </div>
+            {/* {userData?.subscription_status === "not_subscribed" && isSidebarOpen && ( */}
+            <Link
+              to={"/upgrade"}
+              className="py-3 px-16 rounded-md bg-gradient-to-r from-[#FF00AA] to-[#01B9F9] text-white text-center font-semibold"
+            >
+              Upgrade To Pro
+            </Link>
+            {/* // )} */}
           </div>
-          {/* {userData?.subscription_status === "not_subscribed" && isSidebarOpen && ( */}
           <Link
-            to={"/upgrade"}
-            className="py-3 px-16 rounded-md bg-gradient-to-r from-[#FF00AA] to-[#01B9F9] text-white text-center font-semibold"
+            to={"/editProfile"}
+            className="flex items-center px-4 py-2 rounded-lg bg-[#282A30] gap-4"
           >
-            Upgrade To Pro
+            <img
+              src={user?.profileImage || userImage}
+              alt=""
+              className="w-12 h-12 rounded-full object-cover"
+            />
+            <span className="mr-4 w-full text-center">
+              {user?.name || "Guest"}
+            </span>
           </Link>
-          {/* // )} */}
         </div>
-        <Link
-          to={"/editProfile"}
-          className="flex items-center px-4 py-2 rounded-lg bg-[#282A30] gap-4"
-        >
-          <img
-            src={user?.profileImage}
-            alt=""
-            className="w-12 h-12 rounded-full object-cover"
-          />
-          <span className="mr-4 w-full text-center">
-            {user?.name || "Guest"}
-          </span>
-        </Link>
-      </div>
+      )}
     </div>
   );
 }

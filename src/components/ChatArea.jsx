@@ -48,7 +48,7 @@ export function ChatArea() {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://72.167.224.36:5006/api/chatbot/history/${chatId}`,
+        `http://72.167.224.36/api/chatbot/history/${chatId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -169,7 +169,7 @@ export function ChatArea() {
       }
 
       const response = await axios.post(
-        "http://72.167.224.36:5006/api/chatbot/message",
+        "http://72.167.224.36/api/chatbot/message",
         formData,
         {
           headers: {

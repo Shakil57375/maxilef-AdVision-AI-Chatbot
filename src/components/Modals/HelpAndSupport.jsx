@@ -56,7 +56,7 @@ export const HelpAndSupportPage = () => {
           animate={{ scale: 1 }}
           exit={{ scale: 0.8 }}
           transition={{ duration: 0.3 }}
-          className="relative bg-black rounded-lg shadow-lg p-8 w-full max-w-3xl mx-4 dark:bg-gray-700 dark:text-white"
+          className="relative bg-black rounded-lg shadow-lg p-8 w-full max-w-3xl lg:mx-4 mx-0 dark:bg-gray-700 dark:text-white"
         >
           <h1 className="text-2xl md:text-3xl font-bold text-blue-500 mb-8">
             Help & Support

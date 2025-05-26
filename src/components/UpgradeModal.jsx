@@ -108,7 +108,7 @@ export function UpgradePage() {
     {
       id: monthlyPackId || "one", // Use fetched packId, fallback to "one"
       name: "Standard Plan",
-      price: "$14.44",
+      price: "$22.22",
       period: "/ Month",
       subtext: "per user/month, billed annually",
       buttonText: "Buy Now",
@@ -125,7 +125,7 @@ export function UpgradePage() {
       name: "Premium Plan",
       price: "$0",
       period: "/ 30 Days",
-      subtext: "$144.44 / Year (Save $28.84)",
+      subtext: "$222.22 / Year (Save $44.42)",
       buttonText: "Buy Now",
       isPopular: false,
       forText: "For Scaling Businesses",
@@ -168,7 +168,7 @@ export function UpgradePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white p-4 md:p-8">
+    <div className="min-h-screen bg-[#1a1a1a] text-white p-4 md:p-8 overflow-auto">
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0, y: 20 }}
@@ -176,7 +176,7 @@ export function UpgradePage() {
         transition={{ duration: 0.5 }}
       >
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
           {plans.map((plan) => (
             <div
               key={plan.id}

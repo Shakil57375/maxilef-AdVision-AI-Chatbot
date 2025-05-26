@@ -84,7 +84,7 @@ export function Header({ setIsSidebarOpen }) {
         <div className="flex items-center">
           <button
             onClick={() => setIsSidebarOpen((prev) => !prev)}
-            className="mr-4 lg:hidden"
+            className="mr-4 "
           >
             <svg
               className="w-6 h-6"

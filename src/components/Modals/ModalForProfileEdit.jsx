@@ -137,7 +137,7 @@ const ProfileModal = () => {
           animate={{ scale: 1 }}
           exit={{ scale: 0.8 }}
           transition={{ duration: 0.3 }}
-          className="relative bg-black rounded-lg shadow-lg p-8 w-full max-w-3xl mx-4 text-white"
+          className="relative bg-black rounded-lg shadow-lg p-8 w-full max-w-3xl lg:mx-4 mx-0 text-white"
         >
           <button
             onClick={handleCancel}
