@@ -1,17 +1,23 @@
-import { FaCheck } from "react-icons/fa"
+import { FaCheck } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Pricing = ({ forwardedRef }) => {
   return (
     <section ref={forwardedRef} className="py-20 px-4 bg-[#1a1b2e]">
       <div className="container mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center text-[#6366F1]">Subscriptions Plan</h2>
+        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center text-[#6366F1]">
+          Subscriptions Plan
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {/* Free Plan */}
           <div className="bg-[#0a0b1a] border border-gray-800 rounded-lg p-6 flex flex-col">
             <h3 className="text-xl font-bold mb-2">Free</h3>
             <div className="text-3xl font-bold mb-6">
-              $0<span className="text-lg font-normal text-gray-400">/30 Days</span>
+              $0
+              <span className="text-lg font-normal text-gray-400">
+                /30 Days
+              </span>
             </div>
 
             <ul className="space-y-4 mb-8 flex-grow">
@@ -33,7 +39,7 @@ const Pricing = ({ forwardedRef }) => {
               </li>
             </ul>
 
-            <button className="mt-auto bg-transparent border border-[#6366F1] text-[#6366F1] hover:bg-[#6366F1] hover:text-white px-6 py-3 rounded-md transition-colors w-full">
+            <button className="mt-auto bg-transparent border border-[#6366F1] text-[#6366F1] hover:bg-[#6366F1] hover:text-white px-6 py-3 rounded-md transition-colors w-full disabled cursor-not-allowed">
               Activate for free
             </button>
           </div>
@@ -45,7 +51,8 @@ const Pricing = ({ forwardedRef }) => {
             </div>
             <h3 className="text-xl font-bold mb-2 mt-6">Standard</h3>
             <div className="text-3xl font-bold mb-6">
-              $22.22<span className="text-lg font-normal text-gray-400">/month</span>
+              $22.22
+              <span className="text-lg font-normal text-gray-400">/month</span>
             </div>
 
             <ul className="space-y-4 mb-8 flex-grow">
@@ -67,16 +74,20 @@ const Pricing = ({ forwardedRef }) => {
               </li>
             </ul>
 
-            <button className="mt-auto bg-[#6366F1] hover:bg-[#9333ea] text-white px-6 py-3 rounded-md transition-colors w-full">
+            <Link
+              to={"/login"}
+              className="mt-auto bg-[#6366F1] hover:bg-[#9333ea] text-white px-6 py-3 rounded-md transition-colors w-full text-center"
+            >
               Buy now
-            </button>
+            </Link>
           </div>
 
           {/* Premium Plan */}
           <div className="bg-[#0a0b1a] border border-gray-800 rounded-lg p-6 flex flex-col">
             <h3 className="text-xl font-bold mb-2">Premium</h3>
             <div className="text-3xl font-bold mb-6">
-              $222.22<span className="text-lg font-normal text-gray-400">/yearly</span>
+              $222.22
+              <span className="text-lg font-normal text-gray-400">/yearly</span>
             </div>
             <div className="text-sm text-green-500 mb-4">Save $44.42</div>
 
@@ -99,15 +110,17 @@ const Pricing = ({ forwardedRef }) => {
               </li>
             </ul>
 
-            <button className="mt-auto bg-transparent border border-[#6366F1] text-[#6366F1] hover:bg-[#6366F1] hover:text-white px-6 py-3 rounded-md transition-colors w-full">
+            <Link
+              to={"/login"}
+              className="mt-auto bg-transparent border border-[#6366F1] text-[#6366F1] hover:bg-[#6366F1] hover:text-white px-6 py-3 rounded-md transition-colors w-full text-center"
+            >
               Buy now
-            </button>
+            </Link>
           </div>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Pricing
-
+export default Pricing;
