@@ -4,7 +4,7 @@ export const helpAndSupportApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     sendFeedback: builder.mutation({
       query: ({ email, description }) => ({
-        url: "api/problem/report",
+        url: "/api/problem/report",
         method: "POST",
         body: { email, description }, // Pass the email and query as the request body
       }),

@@ -32,7 +32,7 @@ import AppContent from "./page/Home/Home"
 function MainContent() {
   const location = useLocation()
   // Sidebar state management - responsive behavior
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false) // Default to closed on mobile
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true) // Default to closed on mobile
 
   // Define routes that should show header and sidebar
   const routesWithHeaderAndSidebar = [

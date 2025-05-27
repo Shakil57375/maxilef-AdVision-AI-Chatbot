@@ -56,6 +56,9 @@ export default function SubscriptionDetailsPage() {
     });
   };
 
+  // Determine if subscription amount is greater than $0.00
+  const hasActiveSubscription = subscriptionInfo?.amount && subscriptionInfo.amount !== "$0.00";
+
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white p-4 md:p-8 flex items-start justify-center">
       <motion.div
@@ -84,16 +87,43 @@ export default function SubscriptionDetailsPage() {
             </button>
           </div>
 
-          <div className="mb-4">
-            <p className="text-white mb-2">Plan Type</p>
-            <div className="border border-blue-500 rounded-lg p-4 bg-[#212121]">
-              <p className="text-white text-lg">
-                {subscriptionInfo?.type || "N/A"}
-              </p>
-            </div>
-          </div>
+          {hasActiveSubscription ? (
+            <>
+              <div className="mb-4">
+                <p className="text-white mb-2">Plan Type</p>
+                <div className="border border-blue-500 rounded-lg p-4 bg-[#212121]">
+                  <p className="text-white text-lg">
+                    {subscriptionInfo?.type || "N/A"}
+                  </p>
+                </div>
+              </div>
 
-          {subscriptionInfo?.trialActive !== true ? (
+              <div className="border border-blue-500 rounded-lg p-6 mb-6 bg-[#212121]">
+                <div className="space-y-4">
+                  <div className="flex flex-col">
+                    <p className="text-white">Subscription Effective Date:</p>
+                    <p className="text-gray-300">
+                      {formatDate(subscriptionInfo?.begins)}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <p className="text-white">Subscription Expiry Date:</p>
+                    <p className="text-gray-300">
+                      {formatDate(subscriptionInfo?.ends)}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <p className="text-white">Subscription Price:</p>
+                    <p className="text-gray-300">
+                      {subscriptionInfo?.amount || "N/A"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
             <div className="border border-blue-500 rounded-lg p-6 mb-6 bg-[#212121]">
               <Link
                 to="/upgrade"
@@ -102,77 +132,52 @@ export default function SubscriptionDetailsPage() {
                 Please Subscribe to a Plan
               </Link>
             </div>
-          ) : (
-            <div className="border border-blue-500 rounded-lg p-6 mb-6 bg-[#212121]">
-              <div className="space-y-4">
-                <div className="flex flex-col">
-                  <p className="text-white">Subscription Effective Date:</p>
-                  <p className="text-gray-300">
-                    {formatDate(subscriptionInfo?.begins)}
-                  </p>
-                </div>
-
-                <div className="flex flex-col">
-                  <p className="text-white">Subscription Expiry Date:</p>
-                  <p className="text-gray-300">
-                    {formatDate(subscriptionInfo?.ends)}
-                  </p>
-                </div>
-
-                <div className="flex flex-col">
-                  <p className="text-white">Subscription Price:</p>
-                  <p className="text-gray-300">
-                    {subscriptionInfo?.amount || "N/A"}
-                  </p>
-                </div>
-              </div>
-            </div>
           )}
 
-            <div className="flex justify-between space-x-4 mt-8">
-              <button
-                onClick={handleCancelSubscription}
-                disabled={isCancelling}
-                className={`py-2 px-6 border border-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2 bg-red-500 ${
-                  isCancelling ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              >
-                {isCancelling ? (
-                  <>
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8H4z"
-                      />
-                    </svg>
-                    <span >Cancelling...</span>
-                  </>
-                ) : (
-                  "Cancel Subscription"
-                )}
-              </button>
+          <div className="flex justify-between space-x-4 mt-8">
+            <button
+              onClick={handleCancelSubscription}
+              disabled={isCancelling}
+              className={`py-2 px-6 border border-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2 bg-red-500 ${
+                isCancelling ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {isCancelling ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8H4z"
+                    />
+                  </svg>
+                  <span>Cancelling...</span>
+                </>
+              ) : (
+                "Cancel Subscription"
+              )}
+            </button>
 
-              <button
-                onClick={() => navigate("/upgrade")}
-                className="py-2 px-6 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Update Subscription
-              </button>
-            </div>
+            <button
+              onClick={() => navigate("/upgrade")}
+              className="py-2 px-6 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Update Subscription
+            </button>
+          </div>
         </motion.div>
       </motion.div>
     </div>

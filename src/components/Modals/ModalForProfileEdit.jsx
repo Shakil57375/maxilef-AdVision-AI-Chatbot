@@ -121,6 +121,9 @@ const ProfileModal = () => {
     });
   };
 
+  // Determine if subscription amount is greater than $0.00
+  const hasActiveSubscription = subscriptionInfo?.amount && subscriptionInfo.amount !== "$0.00";
+
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white p-4 md:p-8 flex items-start justify-center">
       <motion.div
@@ -199,16 +202,32 @@ const ProfileModal = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Subscription
-                  </label>
-                  <input
-                    value={subscriptionInfo?.type || "N/A"}
-                    disabled
-                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-700 bg-gray-700 text-white"
-                  />
-                </div>
+                {hasActiveSubscription && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-white mb-1">
+                        Subscription
+                      </label>
+                      <input
+                        value={subscriptionInfo?.type || "N/A"}
+                        disabled
+                        className="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-700 bg-gray-700 text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-white mb-1">
+                        Expiry (Date):
+                      </label>
+                      <input
+                        type="text"
+                        value={formatDate(subscriptionInfo?.ends)}
+                        disabled
+                        className="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-700 bg-gray-700 text-white"
+                      />
+                    </div>
+                  </>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-white mb-1">
@@ -217,18 +236,6 @@ const ProfileModal = () => {
                   <input
                     type="email"
                     value={tempData?.email || ""}
-                    disabled
-                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-700 bg-gray-700 text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Expiry (Date):
-                  </label>
-                  <input
-                    type="text"
-                    value={formatDate(subscriptionInfo?.ends)}
                     disabled
                     className="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-700 bg-gray-700 text-white"
                   />

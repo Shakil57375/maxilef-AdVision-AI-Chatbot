@@ -19,7 +19,7 @@ const TermsAndConditionsPage = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          "http://72.167.224.36/api/policy/terms",
+          "/api/policy/terms",
           {
             headers: {
               Authorization: `Bearer ${token}`,

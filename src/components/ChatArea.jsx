@@ -19,42 +19,50 @@ import { RichTextDisplay } from "./Modals/RichTextDisplay";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useGetAllChatsQuery } from "../features/chat/chatApi";
+import { useGetSubscriptionDetailsQuery } from "../features/subscription/subscriptionApi";
 
 export function ChatArea() {
   const { id: currentChatId } = useParams();
-  const {
-    setCurrentChat,
-    currentChatId: contextChatId,
-    setCurrentChatId,
-  } = useChat();
+  const { setCurrentChat, currentChatId: contextChatId, setCurrentChatId } = useChat();
   const navigate = useNavigate();
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
   const user = useSelector(selectUser);
+  const { data: userSubscription } = useGetSubscriptionDetailsQuery();
   const token = useSelector((state) => state.auth.accessToken);
   const { data, refetch } = useGetAllChatsQuery();
-  const emailHash = user?.email
-    ? md5(user.email.trim().toLowerCase())
-    : "default";
+  const emailHash = user?.email ? md5(user.email.trim().toLowerCase()) : "default";
   const [input, setInput] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
   const [chatMessages, setChatMessages] = useState([]);
+  const [isPremiumUser, setIsPremiumUser] = useState(false);
+  const [totalUserMessages, setTotalUserMessages] = useState(0);
+
+  // Determine subscription status and total message count
+  useEffect(() => {
+    if (userSubscription?.subscription?.amount) {
+      setIsPremiumUser(userSubscription.subscription.amount !== "$0.00");
+    }
+    if (data?.chatHistories) {
+      const totalMessages = data.chatHistories.reduce((count, chat) => {
+        return count + (chat.chat_contents || []).filter((msg) => msg.sent_by === "User").length;
+      }, 0);
+      setTotalUserMessages(totalMessages);
+    }
+  }, [userSubscription, data]);
 
   // Fetch chat by ID with token
   const fetchChatById = async (chatId) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        `http://72.167.224.36/api/chatbot/history/${chatId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`/api/chatbot/history/${chatId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const chatData = response.data.chatHistory;
       setChatMessages(chatData.chat_contents || []);
       setCurrentChat(chatData);
@@ -112,7 +120,6 @@ export function ChatArea() {
 
     if (!file.type.startsWith("image/")) {
       toast.error("Only image files are allowed.", { duration: 2000 });
-      // Reset the file input even when there's an error
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -120,7 +127,6 @@ export function ChatArea() {
     }
 
     setSelectedImage(file);
-    // Don't reset here - we want to keep the file selected
   };
 
   const handleAttachClick = () => {
@@ -138,20 +144,37 @@ export function ChatArea() {
       return;
     }
 
+    // Check if free user has reached the 3-message limit across all chats
+    if (!isPremiumUser && totalUserMessages >= 3) {
+      Swal.fire({
+        icon: "warning",
+        title: "Message Limit Reached",
+        text: "Free users are limited to 3 messages total. Upgrade to premium for unlimited messages!",
+        showConfirmButton: true,
+        confirmButtonText: "Upgrade Now",
+        confirmButtonColor: "#3085d6",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/upgrade");
+        }
+      });
+      return;
+    }
+
     const tempMessageId = `temp-${Date.now()}`;
     const userMessage = {
       _id: tempMessageId,
       sent_by: "User",
       text_content: input,
       timestamp: new Date().toISOString(),
-      // Add image preview to the message object if an image is selected
       image_url: selectedImage ? URL.createObjectURL(selectedImage) : null,
     };
 
     // Add user message instantly to the UI
-    setChatMessages((prev) =>
-      currentChatId ? [...prev, userMessage] : [userMessage]
-    );
+    setChatMessages((prev) => (currentChatId ? [...prev, userMessage] : [userMessage]));
+    setTotalUserMessages((prev) => prev + 1);
     setInput("");
     setIsAiLoading(true);
 
@@ -159,7 +182,6 @@ export function ChatArea() {
 
     try {
       const formData = new FormData();
-      // Only append chatId if it exists and is not undefined
       if (currentChatId) {
         formData.append("chatId", currentChatId);
       }
@@ -168,16 +190,12 @@ export function ChatArea() {
         formData.append("image", selectedImage);
       }
 
-      const response = await axios.post(
-        "http://72.167.224.36/api/chatbot/message",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post("/api/chatbot/message", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       const result = response.data;
       if (result.chatHistory) {
@@ -185,7 +203,7 @@ export function ChatArea() {
         setCurrentChatId(newChatId);
         setCurrentChat(result.chatHistory);
 
-        // Fetch the updated chat history to ensure the latest messages are displayed
+        // Fetch the updated chat history
         await fetchChatById(newChatId);
 
         if (!currentChatId) {
@@ -197,9 +215,8 @@ export function ChatArea() {
       setSelectedImage(null);
     } catch (error) {
       console.error("Error sending message:", error);
-      setChatMessages((prev) =>
-        prev.filter((msg) => msg._id !== tempMessageId)
-      );
+      setChatMessages((prev) => prev.filter((msg) => msg._id !== tempMessageId));
+      setTotalUserMessages((prev) => prev - 1); // Revert count on error
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -207,7 +224,6 @@ export function ChatArea() {
       });
     } finally {
       setIsAiLoading(false);
-      // Reset the file input after submission
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -220,9 +236,7 @@ export function ChatArea() {
     "Processing...",
     "Generating response...",
   ];
-  const [currentThinkingMessage, setCurrentThinkingMessage] = useState(
-    thinkingMessages[0]
-  );
+  const [currentThinkingMessage, setCurrentThinkingMessage] = useState(thinkingMessages[0]);
 
   useEffect(() => {
     if (isAiLoading) {
@@ -242,10 +256,7 @@ export function ChatArea() {
           <WholeWebsiteLoader />
         </div>
       ) : (
-        <div
-          ref={chatContainerRef}
-          className="flex-1 overflow-y-auto p-4 space-y-4"
-        >
+        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
           {chatMessages.length === 0 && !currentChatId ? (
             <div>
               <h1 className="text-2xl font-bold my-6 text-white text-center">
@@ -267,23 +278,27 @@ export function ChatArea() {
                   Ask me anything I'll do my best to help.
                 </h1>
                 <p className="text-center text-zinc-400 mb-8 max-w-lg mx-auto">
-                  Get expert guidance powered by AI agents specializing in
-                  Sales, Marketing, and Negotiation. While I provide data-driven
-                  insights and strategic recommendations, remember that I'm just
-                  a robot! Always verify information and make informed decisions
-                  before implementing any advice.
+                  Get expert guidance powered by AI agents specializing in Sales, Marketing, and Negotiation. While I provide data-driven insights and strategic recommendations, remember that I'm just a robot! Always verify information and make informed decisions before implementing any advice.
                 </p>
+                {!isPremiumUser && totalUserMessages >= 3 && (
+                  <p className="text-center text-yellow-400 mb-4">
+                    You've reached the 3-message limit for free users.{" "}
+                    <Link to="/upgrade" className="underline">
+                      Upgrade to premium
+                    </Link>{" "}
+                    for unlimited conversations!
+                  </p>
+                )}
                 <div className="border border-blue-800 rounded-lg p-4 mb-8 max-w-md mx-auto">
                   <div className="flex flex-col items-center">
                     <label htmlFor="image-upload" className="mb-2">
-                      <span className="text-white font-medium">
-                        Upload Image
-                      </span>
+                      <span className="text-white font-medium">Upload Image</span>
                       <input
                         id="image-upload"
                         type="file"
                         className="hidden"
                         onChange={handleImageChange}
+                        disabled={!isPremiumUser && totalUserMessages >= 3}
                       />
                     </label>
                   </div>
@@ -296,22 +311,15 @@ export function ChatArea() {
                 <div
                   key={message.id || message._id}
                   className={`flex ${
-                    message.sent_by === "User"
-                      ? "flex-row-reverse items-start gap-2"
-                      : "flex-row items-start"
+                    message.sent_by === "User" ? "flex-row-reverse items-start gap-2" : "flex-row items-start"
                   }`}
                 >
-                  {message.sent_by === "User" && (
-                    <Link to={"/editProfile"}>{/* User image logic */}</Link>
-                  )}
+                  {message.sent_by === "User" && <Link to={"/editProfile"}>{/* User image logic */}</Link>}
                   <div
                     className={`max-w-[70%] rounded-lg p-4 ${
-                      message.sent_by === "Bot"
-                        ? "bg-transparent text-white"
-                        : "bg-[#0051FF80] text-white"
+                      message.sent_by === "Bot" ? "bg-transparent text-white" : "bg-[#0051FF80] text-white"
                     }`}
                   >
-                    {/* Display image if available */}
                     {message.image_url && (
                       <div className="mb-2">
                         <img
@@ -325,13 +333,20 @@ export function ChatArea() {
                   </div>
                 </div>
               ))}
+              {!isPremiumUser && totalUserMessages >= 3 && (
+                <p className="text-center text-yellow-400 mb-4">
+                  You've reached the 3-message limit for free users.{" "}
+                  <Link to="/upgrade" className="underline">
+                    Upgrade to premium
+                  </Link>{" "}
+                  for unlimited messages!
+                </p>
+              )}
               {isAiLoading && (
                 <div className="flex flex-col rounded-lg p-4 max-w-[70%]">
                   <div className="flex items-center gap-2">
                     <Loader />
-                    <span className="text-white text-opacity-80">
-                      {currentThinkingMessage}
-                    </span>
+                    <span className="text-white text-opacity-80">{currentThinkingMessage}</span>
                   </div>
                 </div>
               )}
@@ -339,11 +354,7 @@ export function ChatArea() {
           )}
         </div>
       )}
-      <form
-        onSubmit={handleSubmit}
-        className="p-4 flex flex-col border-t relative bottom-0"
-      >
-        {/* Image preview area */}
+      <form onSubmit={handleSubmit} className="p-4 flex flex-col border-t relative bottom-0">
         {selectedImage && (
           <div className="mb-2 p-2 bg-gray-800 rounded-lg">
             <div className="flex items-center gap-2">
@@ -355,9 +366,7 @@ export function ChatArea() {
                 />
               </div>
               <div className="flex flex-col flex-1">
-                <span className="text-sm text-white truncate">
-                  {selectedImage.name}
-                </span>
+                <span className="text-sm text-white truncate">{selectedImage.name}</span>
                 <span className="text-xs text-gray-400">
                   {(selectedImage.size / 1024).toFixed(1)} KB
                 </span>
@@ -367,7 +376,6 @@ export function ChatArea() {
                 className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700"
                 onClick={() => {
                   setSelectedImage(null);
-                  // Reset the file input when removing an image
                   if (fileInputRef.current) {
                     fileInputRef.current.value = "";
                   }
@@ -390,7 +398,7 @@ export function ChatArea() {
             type="button"
             onClick={handleAttachClick}
             className="p-3 absolute right-16 z-10"
-            disabled={isAiLoading || isLoading}
+            disabled={isAiLoading || isLoading || (!isPremiumUser && totalUserMessages >= 3)}
           >
             <IoAttach className="text-3xl" />
           </button>
@@ -409,18 +417,19 @@ export function ChatArea() {
             rows={1}
             className="flex-1 p-3 py-5 border dark:border-gray-600 dark:placeholder:text-gray-100 rounded-lg resize-none focus:outline-none focus:ring focus:border-indigo-500 dark:bg-gray-700 dark:text-white placeholder:text-sm"
             style={{ overflow: "hidden" }}
+            disabled={!isPremiumUser && totalUserMessages >= 3}
           />
           <button
             type="submit"
             className={`ml-4 p-3 rounded-full absolute right-4 cursor-pointer ${
-              isAiLoading || isLoading
+              isAiLoading || isLoading || (!isPremiumUser && totalUserMessages >= 3)
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : input.trim() || selectedImage
                 ? "text-white"
                 : "text-gray-400 opacity-50"
             }`}
             disabled={
-              isAiLoading || isLoading || (!input.trim() && !selectedImage)
+              isAiLoading || isLoading || (!input.trim() && !selectedImage) || (!isPremiumUser && totalUserMessages >= 3)
             }
           >
             <IoSendSharp className="text-3xl text-black dark:text-white" />
