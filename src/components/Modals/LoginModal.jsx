@@ -36,7 +36,7 @@ const LoginPage = () => {
 
       // Send token to backend
       const response = await fetch(
-        `/api/auth/oauth/google`,
+        `http://adfusionlabs.ai:5006/api/auth/oauth/google`,
         {
           method: "POST",
           headers: {
@@ -65,12 +65,6 @@ const LoginPage = () => {
       console.error("Google Login Error:", error);
       setError("Failed to login with Google. Please try again.");
     }
-  };
-
-  // Handle Apple Login
-  const handleAppleLogin = () => {
-    // Apple login implementation would go here
-    console.log("Apple login clicked");
   };
 
   // Handle form login

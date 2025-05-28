@@ -1,7 +1,7 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const API_URL = ''; // Replace with your actual API URL
+const API_URL = 'http://adfusionlabs.ai:5006/'; // Replace with your actual API URL
 
 // Constants for token and user storage
 const accessToken_KEY = 'accessToken';

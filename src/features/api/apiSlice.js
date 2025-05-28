@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const baseQuery = fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_BASE_URL,
+    baseUrl: "http://adfusionlabs.ai:5006",
     // 
     prepareHeaders: (headers, { getState }) => {
         // Try to get token from Redux state

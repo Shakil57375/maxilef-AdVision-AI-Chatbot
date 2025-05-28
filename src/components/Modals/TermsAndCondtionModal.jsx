@@ -19,7 +19,7 @@ const TermsAndConditionsPage = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          "/api/policy/terms",
+          "http://adfusionlabs.ai:5006/api/policy/terms",
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -58,7 +58,7 @@ export function ChatArea() {
   const fetchChatById = async (chatId) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`/api/chatbot/history/${chatId}`, {
+      const response = await axios.get(`http://adfusionlabs.ai:5006/api/chatbot/history/${chatId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -190,7 +190,7 @@ export function ChatArea() {
         formData.append("image", selectedImage);
       }
 
-      const response = await axios.post("/api/chatbot/message", formData, {
+      const response = await axios.post("http://adfusionlabs.ai:5006/api/chatbot/message", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

@@ -19,7 +19,7 @@ const PrivacyPolicyPage = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          "/api/policy/privacy",
+          "http://adfusionlabs.ai:5006/api/policy/privacy",
           {
             headers: {
               Authorization: `Bearer ${token}`,
