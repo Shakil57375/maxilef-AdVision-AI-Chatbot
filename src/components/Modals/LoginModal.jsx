@@ -54,7 +54,6 @@ const LoginPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Google Login successful, backend response:", data);
 
         dispatch(
           userLoggedIn({
@@ -70,14 +69,12 @@ const LoginPage = () => {
         throw new Error("Backend login failed.");
       }
     } catch (error) {
-      console.error("Google Login Error:", error);
       setError("Failed to login with Google. Please try again.");
     }
   };
 
   // Handle form login
   const onSubmit = async (credentials) => {
-    console.log({ email: credentials.email, password: credentials.password });
 
     try {
       setError("");

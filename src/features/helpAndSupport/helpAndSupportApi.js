@@ -9,7 +9,6 @@ export const helpAndSupportApi = apiSlice.injectEndpoints({
         body: { email, description }, // Pass the email and query as the request body
       }),
       transformResponse: (response) => {
-        console.log("Feedback Response:", response);
         return response;
       },
     }),

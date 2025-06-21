@@ -14,7 +14,6 @@ export default function VerifyOtpPage() {
   // Get temporary email from localStorage
   const authData = JSON.parse(localStorage.getItem("email"));
   const email = authData?.email;
-  console.log(email);
   useEffect(() => {
     // Focus the first input field when component mounts
     const firstInput = document.getElementById("code-0");

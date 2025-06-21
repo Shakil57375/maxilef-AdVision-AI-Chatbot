@@ -9,7 +9,6 @@ const authSlice = createSlice({
   },
   reducers: {
     userLoggedIn: (state, action) => {
-      console.log("This is from authSlice ................................", action.payload.token)
       // Assign user profile and tokens to state
       state.user = action.payload.user
       state.accessToken = action.payload.token

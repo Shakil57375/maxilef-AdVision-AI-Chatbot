@@ -32,7 +32,6 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const [isPremiumUser, setIsPremiumUser] = useState(false);
-  const [totalUserMessages, setTotalUserMessages] = useState(0);
 
   // Fetch chats using RTK Query
   const { data: chatsData, isLoading: isChatsLoading } = useGetAllChatsQuery();
@@ -42,18 +41,12 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   const chats = chatsData?.chatHistories || [];
   const isLoading = isChatsLoading || isProfileLoading;
 
-  // Determine subscription status and total message count
+  // Determine subscription status
   useEffect(() => {
     if (userSubscription?.subscription?.amount) {
       setIsPremiumUser(userSubscription.subscription.amount !== "$0.00");
     }
-    if (chatsData?.chatHistories) {
-      const totalMessages = chatsData.chatHistories.reduce((count, chat) => {
-        return count + (chat.chat_contents || []).filter((msg) => msg.sent_by === "User").length;
-      }, 0);
-      setTotalUserMessages(totalMessages);
-    }
-  }, [userSubscription, chatsData]);
+  }, [userSubscription]);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -112,23 +105,6 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   };
 
   const handleNewChat = async () => {
-    if (!isPremiumUser && totalUserMessages >= 3) {
-      Swal.fire({
-        icon: "warning",
-        title: "Message Limit Reached",
-        text: "Free users are limited to 3 messages total. Upgrade to premium to start a new conversation!",
-        showConfirmButton: true,
-        confirmButtonText: "Upgrade Now",
-        confirmButtonColor: "#3085d6",
-        showCancelButton: true,
-        cancelButtonText: "Cancel",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/upgrade");
-        }
-      });
-      return;
-    }
     setCurrentChat([]);
     setCurrentChatId(null);
     navigate("/");
@@ -180,13 +156,8 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
         {isSidebarOpen && (
           <div className="bg-[#1F1F1F] dark:bg-gray-700 w-full">
             <button
-              className={`py-3 px-[82px] rounded-md text-white text-center font-semibold flex items-center justify-center mx-auto mt-8 mb-3 ${
-                !isPremiumUser && totalUserMessages >= 3
-                  ? "bg-gray-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-[#FF00AA] to-[#01B9F9]"
-              }`}
+              className="py-3 px-[82px] rounded-md text-white text-center font-semibold flex items-center justify-center mx-auto mt-8 mb-3 bg-gradient-to-r from-[#FF00AA] to-[#01B9F9]"
               onClick={handleNewChat}
-              disabled={!isPremiumUser && totalUserMessages >= 3}
             >
               + New Chat
             </button>
@@ -464,17 +435,17 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
               <img src={shape2} className="absolute top-8 right-0" alt="" />
               <img src={shape3} className="absolute bottom-0 left-0" alt="" />
               <h1 className="text-center w-full my-5 text-2xl font-bold">
-                Update Your Plan
+                Start Your Free Trial
               </h1>
               <div className="text-center w-full mb-5">
-                <p>Unlock powerful features</p>
-                <p>with our pro upgrade today!</p>
+                <p>Unlock unlimited conversations with a</p>
+                <p>3-day free trial, cancel anytime!</p>
               </div>
               <Link
                 to={"/upgrade"}
                 className="py-3 px-16 rounded-md bg-gradient-to-r from-[#FF00AA] to-[#01B9F9] text-white text-center font-semibold"
               >
-                Upgrade To Pro
+                Try Free Trial
               </Link>
             </div>
           )}

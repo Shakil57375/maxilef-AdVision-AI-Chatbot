@@ -18,7 +18,6 @@ const ForgotPasswordPage = () => {
 
   // Handle form submission
   const onSubmit = async (data) => {
-    console.log(data.email);
     try {
       const response = await sendOtp(data.email).unwrap();
       toast.success(response?.Message || "OTP sent successfully!", {

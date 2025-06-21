@@ -12,7 +12,6 @@ export const authApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log("Signup successful:", data)
           dispatch(
             userLoggedIn({
               refreshToken: data.refreshToken,
@@ -37,7 +36,6 @@ export const authApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log("Login successful:", data)
           dispatch(
             userLoggedIn({
               refreshToken: data.refreshToken,
@@ -84,7 +82,6 @@ export const authApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log("Profile updated successfully:", data)
         } catch (error) {
           console.error("Profile update failed:", error)
         }
@@ -102,7 +99,6 @@ export const authApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log("Profile image uploaded successfully:", data)
         } catch (error) {
           console.error("Profile image upload failed:", error)
         }
@@ -120,7 +116,6 @@ export const authApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log("OTP Resent Successfully:", data)
         } catch (error) {
           console.error("Failed to resend OTP:", error)
         }
@@ -136,7 +131,6 @@ export const authApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log("OTP sent successfully:", data)
         } catch (error) {
           console.error("Failed to send OTP for forgot password:", error)
         }
@@ -152,7 +146,6 @@ export const authApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log("OTP Verified Successfully:", data)
         } catch (error) {
           console.error("OTP Verification Failed:", error)
         }
@@ -168,7 +161,6 @@ export const authApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log("Password Reset Successful:", data)
         } catch (error) {
           console.error("Password Reset Failed:", error)
         }

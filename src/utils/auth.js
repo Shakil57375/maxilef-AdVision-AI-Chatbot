@@ -73,12 +73,10 @@ export const auth = {
 
   signup: async (userData) => {
     const response = await axios.post(`${API_URL}/authentication_app/signup/`, userData);
-    console.log(response.data)
     return response.data;
   },
 
   verifyEmail: async (email, otp) => {
-    console.log(email, otp)
     const response = await axios.post(`${API_URL}/authentication_app/verify_email/`, { email, otp });
     return response.data;
   },
@@ -90,9 +88,6 @@ export const auth = {
       });
       const token = auth.getAccessToken();
       // Check if access token is still valid
-      console.log(token)
-      console.log("data", response.data)
-      // Check if the response is JSON and contains valid data
       if (response.headers['content-type'].includes('application/json') && response.data) {
         return response.data;
       } else {

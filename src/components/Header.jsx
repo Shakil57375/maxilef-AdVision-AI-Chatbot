@@ -77,7 +77,6 @@ export function Header({ setIsSidebarOpen }) {
     handleLogout();
     dispatch(userLoggedOut());
   };
-  console.log("from header", user);
   return (
     <div className="w-full ml-auto">
       <header className="bg-[#1F1F1F] dark:bg-gray-700 dark:text-white text-black p-4 flex items-center justify-between z-0">

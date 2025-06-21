@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { IoAttach, IoSendSharp } from "react-icons/io5";
@@ -39,20 +37,13 @@ export function ChatArea() {
   const chatContainerRef = useRef(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [isPremiumUser, setIsPremiumUser] = useState(false);
-  const [totalUserMessages, setTotalUserMessages] = useState(0);
 
-  // Determine subscription status and total message count
+  // Determine subscription status
   useEffect(() => {
     if (userSubscription?.subscription?.amount) {
       setIsPremiumUser(userSubscription.subscription.amount !== "$0.00");
     }
-    if (data?.chatHistories) {
-      const totalMessages = data.chatHistories.reduce((count, chat) => {
-        return count + (chat.chat_contents || []).filter((msg) => msg.sent_by === "User").length;
-      }, 0);
-      setTotalUserMessages(totalMessages);
-    }
-  }, [userSubscription, data]);
+  }, [userSubscription]);
 
   // Fetch chat by ID with token
   const fetchChatById = async (chatId) => {
@@ -144,14 +135,14 @@ export function ChatArea() {
       return;
     }
 
-    // Check if free user has reached the 3-message limit across all chats
-    if (!isPremiumUser && totalUserMessages >= 3) {
+    // Check if user has a subscription
+    if (!isPremiumUser) {
       Swal.fire({
         icon: "warning",
-        title: "Message Limit Reached",
-        text: "Free users are limited to 3 messages total. Upgrade to premium for unlimited messages!",
+        title: "Subscription Required",
+        text: "You need a subscription to send messages. Upgrade for a 3-day free trial, cancel anytime!",
         showConfirmButton: true,
-        confirmButtonText: "Upgrade Now",
+        confirmButtonText: "Try Free Trial",
         confirmButtonColor: "#3085d6",
         showCancelButton: true,
         cancelButtonText: "Cancel",
@@ -174,7 +165,6 @@ export function ChatArea() {
 
     // Add user message instantly to the UI
     setChatMessages((prev) => (currentChatId ? [...prev, userMessage] : [userMessage]));
-    setTotalUserMessages((prev) => prev + 1);
     setInput("");
     setIsAiLoading(true);
 
@@ -216,7 +206,6 @@ export function ChatArea() {
     } catch (error) {
       console.error("Error sending message:", error);
       setChatMessages((prev) => prev.filter((msg) => msg._id !== tempMessageId));
-      setTotalUserMessages((prev) => prev - 1); // Revert count on error
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -275,18 +264,18 @@ export function ChatArea() {
                   />
                 </div>
                 <h1 className="text-3xl font-bold text-center mb-4">
-                  Ask me anything I'll do my best to help.
+                  Ask me anything I&apos;ll do my best to help.
                 </h1>
                 <p className="text-center text-zinc-400 mb-8 max-w-lg mx-auto">
-                  Get expert guidance powered by AI agents specializing in Sales, Marketing, and Negotiation. While I provide data-driven insights and strategic recommendations, remember that I'm just a robot! Always verify information and make informed decisions before implementing any advice.
+                  Get expert guidance powered by AI agents specializing in Sales, Marketing, and Negotiation. While I provide data-driven insights and strategic recommendations, remember that I&apos;m just a robot! Always verify information and make informed decisions before implementing any advice.
                 </p>
-                {!isPremiumUser && totalUserMessages >= 3 && (
+                {!isPremiumUser && (
                   <p className="text-center text-yellow-400 mb-4">
-                    You've reached the 3-message limit for free users.{" "}
+                    A subscription is required to start a conversation.{" "}
                     <Link to="/upgrade" className="underline">
-                      Upgrade to premium
-                    </Link>{" "}
-                    for unlimited conversations!
+                      Sign up for a 3-day free trial
+                    </Link>
+                    , cancel anytime!
                   </p>
                 )}
                 <div className="border border-blue-800 rounded-lg p-4 mb-8 max-w-md mx-auto">
@@ -298,7 +287,7 @@ export function ChatArea() {
                         type="file"
                         className="hidden"
                         onChange={handleImageChange}
-                        disabled={!isPremiumUser && totalUserMessages >= 3}
+                        disabled={!isPremiumUser}
                       />
                     </label>
                   </div>
@@ -333,13 +322,13 @@ export function ChatArea() {
                   </div>
                 </div>
               ))}
-              {!isPremiumUser && totalUserMessages >= 3 && (
+              {!isPremiumUser && (
                 <p className="text-center text-yellow-400 mb-4">
-                  You've reached the 3-message limit for free users.{" "}
+                  A subscription is required to continue this conversation.{" "}
                   <Link to="/upgrade" className="underline">
-                    Upgrade to premium
-                  </Link>{" "}
-                  for unlimited messages!
+                    Sign up for a 3-day free trial
+                  </Link>
+                  , cancel anytime!
                 </p>
               )}
               {isAiLoading && (
@@ -398,7 +387,7 @@ export function ChatArea() {
             type="button"
             onClick={handleAttachClick}
             className="p-3 absolute right-16 z-10"
-            disabled={isAiLoading || isLoading || (!isPremiumUser && totalUserMessages >= 3)}
+            disabled={isAiLoading || isLoading || !isPremiumUser}
           >
             <IoAttach className="text-3xl" />
           </button>
@@ -417,19 +406,19 @@ export function ChatArea() {
             rows={1}
             className="flex-1 p-3 py-5 border dark:border-gray-600 dark:placeholder:text-gray-100 rounded-lg resize-none focus:outline-none focus:ring focus:border-indigo-500 dark:bg-gray-700 dark:text-white placeholder:text-sm"
             style={{ overflow: "hidden" }}
-            disabled={!isPremiumUser && totalUserMessages >= 3}
+            disabled={!isPremiumUser}
           />
           <button
             type="submit"
             className={`ml-4 p-3 rounded-full absolute right-4 cursor-pointer ${
-              isAiLoading || isLoading || (!isPremiumUser && totalUserMessages >= 3)
+              isAiLoading || isLoading || !isPremiumUser
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : input.trim() || selectedImage
                 ? "text-white"
                 : "text-gray-400 opacity-50"
             }`}
             disabled={
-              isAiLoading || isLoading || (!input.trim() && !selectedImage) || (!isPremiumUser && totalUserMessages >= 3)
+              isAiLoading || isLoading || (!input.trim() && !selectedImage) || !isPremiumUser
             }
           >
             <IoSendSharp className="text-3xl text-black dark:text-white" />

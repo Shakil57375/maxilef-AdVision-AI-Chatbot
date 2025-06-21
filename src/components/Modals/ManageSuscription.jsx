@@ -12,7 +12,6 @@ export default function SubscriptionDetailsPage() {
   const navigate = useNavigate();
 
   const { data } = useGetSubscriptionDetailsQuery();
-  console.log(data?.subscription);
   const subscriptionInfo = data?.subscription || null;
 
   const [cancelSubscription, { isLoading: isCancelling }] =

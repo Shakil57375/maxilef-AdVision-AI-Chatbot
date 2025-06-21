@@ -25,7 +25,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
   // If we get a 401 (unauthorized), try to refresh the token
   if (result?.error && result.error.status === 401) {
-    console.log("Access token expired, attempting to refresh...")
 
     // Get refresh token from state or localStorage
     const state = api.getState()
@@ -50,7 +49,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       )
 
       if (refreshResult?.data?.success) {
-        console.log("Token refreshed successfully")
 
         // Get current user data
         const currentUser = state.auth?.user
@@ -68,12 +66,10 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
         // Retry the original query with new token
         result = await baseQuery(args, api, extraOptions)
       } else {
-        console.log("Token refresh failed, logging out user")
         // Refresh failed, log out the user
         api.dispatch(userLoggedOut())
       }
     } else {
-      console.log("No refresh token available, logging out user")
       // No refresh token available, log out the user
       api.dispatch(userLoggedOut())
     }

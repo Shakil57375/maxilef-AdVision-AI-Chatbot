@@ -18,7 +18,6 @@ const LoginForm = () => {
       return;
     }
 
-    console.log("Facebook Login Successful:", response);
 
     const { name, email, accessToken } = response;
 
@@ -41,7 +40,6 @@ const LoginForm = () => {
 
       if (res.ok) {
         const data = await res.json();
-        console.log("Backend Facebook Login Successful:", data);
 
         dispatch(
           userLoggedIn({

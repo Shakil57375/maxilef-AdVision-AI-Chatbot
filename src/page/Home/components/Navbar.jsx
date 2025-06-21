@@ -10,7 +10,6 @@ const Navbar = ({ scrollToSection, refs }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [activeSection, setActiveSection] = useState("home");
   const token = useSelector(selectAccessToken);
-  console.log(token);
 
   // Toggle mobile menu
   const toggleMenu = () => {

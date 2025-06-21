@@ -37,7 +37,6 @@ export function AuthProvider({ children }) {
   const handleLogin = async (credentials) => {
     try {
       const data = await login(credentials).unwrap();
-      console.log("data from here", data);
       dispatch(
         userLoggedIn({
           refreshToken: data.refreshToken,
@@ -66,7 +65,6 @@ export function AuthProvider({ children }) {
       toast.success("Signup successful! Please verify your email.", {
         duration: 1000,
       });
-      console.log("from auth Context .........................");
 
       // Return success to onSubmit
       return data;

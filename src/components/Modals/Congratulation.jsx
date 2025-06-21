@@ -7,7 +7,6 @@ export default function Congratulations() {
   const navigate = useNavigate();
   const location = useLocation();
   const onSubmit = (e) => {
-    console.log("user is not authenticated");
     navigate("/login");
   };
 

@@ -15,7 +15,6 @@ export function UpgradePage() {
   const [loadingPlanId, setLoadingPlanId] = useState(null);
   const navigate = useNavigate();
   const { data: subscriptionInfo } = useGetSubscriptionDetailsQuery();
-  console.log(subscriptionInfo);
   // Check if the user is already subscribed
 
   // Fetch active packages to get packId
@@ -25,7 +24,6 @@ export function UpgradePage() {
     isError,
     error,
   } = useGetActivePackagesQuery();
-  console.log(packagesData);
   // Mutation to create a Stripe session
   const [createStripeSession] = useCreateStripeSessionMutation();
 
@@ -82,7 +80,6 @@ export function UpgradePage() {
   const monthlyPackId = packagesData?.packages?.find(
     (pkg) => pkg.subscriptionType === "Monthly" && pkg.amount > 0
   )?.packId;
-  console.log(monthlyPackId);
   const yearlyPackId = packagesData?.packages?.find(
     (pkg) => pkg.subscriptionType === "Yearly" && pkg.amount > 0
   )?.packId;

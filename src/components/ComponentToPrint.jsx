@@ -5,8 +5,6 @@ import "./style.css"; // Import Quill styles
 export const ComponentToPrint = React.forwardRef((props, ref) => {
   const { data } = props;
 
-  console.log("data",data);
-  
 
   return (
     <div ref={ref} >
