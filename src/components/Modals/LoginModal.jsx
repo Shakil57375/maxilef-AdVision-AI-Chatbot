@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash, FaEnvelope, FaLock } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithPopup, GoogleAuthProvider, getAuth } from "firebase/auth";
 import { app } from "../../Firebase/firebase";
 import { useAuth } from "../../context/AuthContext";
@@ -18,6 +18,8 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { handleLogin, isLoginLoading } = useAuth();
   const auth = getAuth(app);
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
   const {
     register,
     handleSubmit,
@@ -54,10 +56,16 @@ const LoginPage = () => {
         const data = await response.json();
         console.log("Google Login successful, backend response:", data);
 
-        dispatch(userLoggedIn({ refreshToken: data.refreshToken, token: data.accessToken, user: data.user }))
+        dispatch(
+          userLoggedIn({
+            refreshToken: data.refreshToken,
+            token: data.accessToken,
+            user: data.user,
+          })
+        );
 
         localStorage.setItem("auth", JSON.stringify(data));
-        navigate("/");
+        navigate(from, { replace: true });
       } else {
         throw new Error("Backend login failed.");
       }
@@ -89,7 +97,7 @@ const LoginPage = () => {
       // } else if (!data.user_profile?.about_you) {
       //   navigate("/aboutMe")
       // } else {
-      navigate("/");
+      navigate(from, { replace: true });
       // }
     } catch (err) {
       console.error("Login error:", err);
