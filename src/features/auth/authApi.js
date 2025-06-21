@@ -13,7 +13,13 @@ export const authApi = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled
           console.log("Signup successful:", data)
-          dispatch(userLoggedIn({ refreshToken: data.refreshToken, token: data.accessToken, user: data.user }))
+          dispatch(
+            userLoggedIn({
+              refreshToken: data.refreshToken,
+              token: data.accessToken,
+              user: data.user,
+            }),
+          )
         } catch (error) {
           console.error("Signup failed:", error)
           return
@@ -32,12 +38,28 @@ export const authApi = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled
           console.log("Login successful:", data)
-          dispatch(userLoggedIn({ refreshToken: data.refreshToken, token: data.accessToken, user: data.user }))
+          dispatch(
+            userLoggedIn({
+              refreshToken: data.refreshToken,
+              token: data.accessToken,
+              user: data.user,
+            }),
+          )
         } catch (error) {
           console.error("Login failed:", error)
         }
       },
     }),
+
+    refreshToken: builder.mutation({
+      query: (refreshToken) => ({
+        url: "api/auth/refresh-token",
+        method: "POST",
+        body: { token: refreshToken },
+      }),
+    }),
+
+    
 
     verifyEmail: builder.mutation({
       query: ({ email, otp }) => ({
@@ -158,6 +180,7 @@ export const authApi = apiSlice.injectEndpoints({
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useRefreshTokenMutation,
   useVerifyEmailMutation,
   useGetUserProfileQuery,
   useUpdateProfileMutation,

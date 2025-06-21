@@ -123,9 +123,9 @@ export function UpgradePage() {
     {
       id: yearlyPackId || "two", // Use fetched packId, fallback to "two"
       name: "Premium Plan",
-      price: "$0",
-      period: "/ 30 Days",
-      subtext: "$222.22 / Year (Save $44.42)",
+      price: "$222.22",
+      period: "/ Year",
+      subtext: "per user / Year (Save $44.42)",
       buttonText: "Buy Now",
       isPopular: false,
       forText: "For Scaling Businesses",
