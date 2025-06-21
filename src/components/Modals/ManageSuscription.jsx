@@ -57,10 +57,11 @@ export default function SubscriptionDetailsPage() {
   };
 
   // Determine if subscription amount is greater than $0.00
-  const hasActiveSubscription = subscriptionInfo?.amount && subscriptionInfo.amount !== "$0.00";
+  const hasActiveSubscription =
+    subscriptionInfo?.amount && subscriptionInfo.amount !== "$0.00";
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white p-4 md:p-8 flex items-start justify-center">
+    <div className="min-h-screen bg-[#1a1a1a] text-white p-4 md:p-8 flex items-start justify-center z-50">
       <motion.div
         className="w-full max-w-2xl bg-[#1a1a1a] rounded-2xl relative"
         initial={{ opacity: 0, y: 20 }}
@@ -134,49 +135,51 @@ export default function SubscriptionDetailsPage() {
             </div>
           )}
 
-          <div className="flex justify-between space-x-4 mt-8">
-            <button
-              onClick={handleCancelSubscription}
-              disabled={isCancelling}
-              className={`py-2 px-6 border border-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2 bg-red-500 ${
-                isCancelling ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              {isCancelling ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v8H4z"
-                    />
-                  </svg>
-                  <span>Cancelling...</span>
-                </>
-              ) : (
-                "Cancel Subscription"
-              )}
-            </button>
-
-            <button
-              onClick={() => navigate("/upgrade")}
-              className="py-2 px-6 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Update Subscription
-            </button>
+          <div className="flex justify-center space-x-4 mt-8">
+            {hasActiveSubscription ? (
+              <button
+                onClick={handleCancelSubscription}
+                disabled={isCancelling}
+                className={`py-2 px-6 border border-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2 bg-red-500 ${
+                  isCancelling ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                {isCancelling ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      />
+                    </svg>
+                    <span>Cancelling...</span>
+                  </>
+                ) : (
+                  "Cancel Subscription"
+                )}
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate("/upgrade")}
+                className="py-2 px-6 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Update Subscription
+              </button>
+            )}
           </div>
         </motion.div>
       </motion.div>

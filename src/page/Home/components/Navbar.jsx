@@ -2,11 +2,15 @@ import { useState, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import logo from "../../../assets/logo.png";
 import { Link } from "react-router-dom";
+import { selectAccessToken } from "../../../features/auth/authSlice";
+import { useSelector } from "react-redux";
 
 const Navbar = ({ scrollToSection, refs }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [activeSection, setActiveSection] = useState("home");
+  const token = useSelector(selectAccessToken);
+  console.log(token);
 
   // Toggle mobile menu
   const toggleMenu = () => {
@@ -118,21 +122,30 @@ const Navbar = ({ scrollToSection, refs }) => {
               ))}
             </div>
 
-            {/* Auth Buttons */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Link
-                to={"/login"}
-                className="text-white hover:text-[#a855f7] transition-colors"
-              >
-                Log In
-              </Link>
-              <Link
-                to={"/signUp"}
-                className="bg-[#a855f7] hover:bg-[#9333ea] text-white px-4 py-2 rounded-md transition-colors"
-              >
-                Sign Up
-              </Link>
-            </div>
+            {token ? (
+              <div className="hidden md:flex space-x-4">
+                <Link to="/">
+                  <button className="bg-[#a855f7] hover:bg-[#9333ea] text-white py-2 px-4 rounded-lg transition-colors">
+                    Chat Now 🚀
+                  </button>
+                </Link>
+              </div>
+            ) : (
+              <div className="hidden md:flex space-x-4">
+                <Link
+                  to={"/login"}
+                  className="text-white hover:bg-[#1a1b2e] transition-colors py-2 px-4 rounded-lg"
+                >
+                  Log In
+                </Link>
+                <Link
+                  to={"/register"}
+                  className="bg-[#a855f7] hover:bg-[#9333ea] text-white py-2 px-4 rounded-lg transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
 
             {/* Mobile Menu Button */}
             <button

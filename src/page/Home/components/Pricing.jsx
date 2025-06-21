@@ -75,7 +75,7 @@ const Pricing = ({ forwardedRef }) => {
             </ul>
 
             <Link
-              to={"/login"}
+              to={"/upgrade"}
               className="mt-auto bg-[#6366F1] hover:bg-[#9333ea] text-white px-6 py-3 rounded-md transition-colors w-full text-center"
             >
               Buy now
@@ -111,7 +111,7 @@ const Pricing = ({ forwardedRef }) => {
             </ul>
 
             <Link
-              to={"/login"}
+              to={"/upgrade"}
               className="mt-auto bg-transparent border border-[#6366F1] text-[#6366F1] hover:bg-[#6366F1] hover:text-white px-6 py-3 rounded-md transition-colors w-full text-center"
             >
               Buy now

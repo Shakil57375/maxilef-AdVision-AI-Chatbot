@@ -172,7 +172,7 @@ export function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
 
   return (
     <div
-      className={`fixed lg:static z-50 top-20 bottom-0 h-[calc(100vh-80px)] ${
+      className={`fixed lg:static z-40 top-20 bottom-0 h-[calc(100vh-80px)] ${
         isSidebarOpen ? "left-0 w-80" : "-left-full lg:w-full"
       } lg:left-0 bg-[#1F1F1F] dark:bg-gray-700 transition-all duration-300 ease-in-out !text-white`}
     >

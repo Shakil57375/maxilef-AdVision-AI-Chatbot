@@ -42,7 +42,7 @@ export const HelpAndSupportPage = () => {
   };
 
   return (
-    <div className="min-h-screen my-auto bg-[#1F1F1F] text-white p-4 md:p-8">
+    <div className="min-h-screen my-auto bg-[#1F1F1F] text-white p-4 md:p-8 z-50 ">
       <motion.div
         className="max-w-4xl mx-auto"
         initial={{ opacity: 0, y: 20 }}
