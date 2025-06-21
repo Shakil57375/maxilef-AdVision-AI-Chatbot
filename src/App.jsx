@@ -1,7 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import { Provider } from "react-redux"
+import { PersistGate } from "redux-persist/integration/react"
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom"
+import { store, persistor } from "./app/store.js"
 import { ChatProvider } from "./context/ChatContext"
 import { Sidebar } from "./components/Sidebar"
 import { ChatArea } from "./components/ChatArea"
@@ -31,10 +34,8 @@ import AppContent from "./page/Home/Home"
 
 function MainContent() {
   const location = useLocation()
-  // Sidebar state management - responsive behavior
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true) // Default to closed on mobile
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
-  // Define routes that should show header and sidebar
   const routesWithHeaderAndSidebar = [
     "/",
     "/chat/:id",
@@ -54,26 +55,20 @@ function MainContent() {
     "/privacyAndPolicy",
   ]
 
-  // Check if current route should show header and sidebar
   const showHeaderAndSidebar = routesWithHeaderAndSidebar.some((route) => {
     const match = new RegExp("^" + route.replace(":id", "[^/]+") + "$")
     return match.test(location.pathname)
   })
 
-  // Dynamic container class based on route
   const containerClass = location.pathname === "/home" ? "flex-1 flex flex-col" : "flex-1 flex flex-col h-screen"
 
   return (
     <div className={containerClass}>
-      {/* Header - responsive design */}
       {showHeaderAndSidebar && <Header setIsSidebarOpen={setIsSidebarOpen} />}
 
-      {/* Main content area with responsive layout */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Sidebar - responsive behavior with overlay on mobile */}
         {showHeaderAndSidebar && (
           <>
-            {/* Overlay for mobile when sidebar is open */}
             {isSidebarOpen && (
               <div
                 className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -81,23 +76,18 @@ function MainContent() {
               />
             )}
 
-            {/* Sidebar component */}
             <div className="relative z-50">
               <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
             </div>
           </>
         )}
 
-        {/* Main content area - responsive margins */}
         <div
           className={`flex-1 flex flex-col bg-white dark:bg-gray-800 dark:text-white transition-all duration-300 ${
-            showHeaderAndSidebar && isSidebarOpen
-              ? "lg:ml-0" // No margin on large screens (sidebar is positioned)
-              : ""
+            showHeaderAndSidebar && isSidebarOpen ? "lg:ml-0" : ""
           }`}
         >
           <Routes>
-            {/* Protected routes */}
             <Route
               path="/"
               element={
@@ -107,10 +97,8 @@ function MainContent() {
               }
             />
 
-            {/* Home route - public access */}
             <Route path="/home" element={<AppContent />} />
 
-            {/* Chat route with dynamic ID */}
             <Route
               path="/chat/:id"
               element={
@@ -120,7 +108,6 @@ function MainContent() {
               }
             />
 
-            {/* Profile management */}
             <Route
               path="/editProfile"
               element={
@@ -130,7 +117,6 @@ function MainContent() {
               }
             />
 
-            {/* Authentication routes - public access only */}
             <Route
               path="/signUp"
               element={
@@ -156,7 +142,6 @@ function MainContent() {
               }
             />
 
-            {/* Verification routes */}
             <Route path="/verificationCode" element={<ModalForVerificationCode />} />
             <Route
               path="/verifyForgetPasswordOtp"
@@ -183,12 +168,10 @@ function MainContent() {
               }
             />
 
-            {/* Support and information pages */}
             <Route path="/helpAndSupport" element={<HelpAndSupportPage />} />
             <Route path="/settings" element={<ModalForSettings />} />
             <Route path="/faq" element={<ModalForFAQ />} />
 
-            {/* Subscription management - protected routes */}
             <Route
               path="/upgrade"
               element={
@@ -206,13 +189,11 @@ function MainContent() {
               }
             />
 
-            {/* Legal pages */}
             <Route path="/TermsAndConditions" element={<TermsAndConditionsPage />} />
             <Route path="/terms" element={<TermsAndConditionsPage />} />
             <Route path="/aboutMe" element={<ModalForAboutMe />} />
             <Route path="/privacyAndPolicy" element={<PrivacyPolicyPage />} />
 
-            {/* 404 fallback */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
@@ -223,20 +204,30 @@ function MainContent() {
 
 function App() {
   return (
-    <Router>
-      {/* Authentication context provider */}
-      <AuthProvider>
-        {/* Chat context provider */}
-        <ChatProvider>
-          {/* Main app container with responsive font */}
-          <div className="flex font-montserrat min-h-screen">
-            <MainContent />
+    <Provider store={store}>
+      <PersistGate
+        loading={
+          <div className="flex items-center justify-center min-h-screen bg-gray-900">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-white">Loading...</p>
+            </div>
           </div>
-          {/* Toast notifications */}
-          <Toaster />
-        </ChatProvider>
-      </AuthProvider>
-    </Router>
+        }
+        persistor={persistor}
+      >
+        <Router>
+          <AuthProvider>
+            <ChatProvider>
+              <div className="flex font-montserrat min-h-screen">
+                <MainContent />
+              </div>
+              <Toaster />
+            </ChatProvider>
+          </AuthProvider>
+        </Router>
+      </PersistGate>
+    </Provider>
   )
 }
 

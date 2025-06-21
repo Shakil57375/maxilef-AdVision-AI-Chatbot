@@ -38,7 +38,7 @@ const LoginPage = () => {
 
       // Send token to backend
       const response = await fetch(
-        `http://adfusionlabs.ai:5006/api/auth/oauth/google`,
+        `https://adfusionlabs.ai/api/auth/oauth/google`,
         {
           method: "POST",
           headers: {
